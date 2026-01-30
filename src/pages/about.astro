@@ -1,0 +1,24 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Testimonials from '../components/Testimonials.astro';
+import NewsletterCTA from '../components/NewsletterCTA.astro';
+import AboutHero from '../components/AboutHero.astro';
+import MissionSection from '../components/MissionSection.astro';
+import TeamGrid from '../components/TeamGrid.astro';
+import { missionHighlights, teamMembers } from '../data/about';
+---
+
+<BaseLayout
+  title="About Us | Pet Care Blog"
+  description="Learn about the Pet Care Blog team - dedicated pet lovers and experts helping you give your furry friends the best care possible."
+>
+  <AboutHero />
+  <MissionSection highlights={missionHighlights} />
+  <TeamGrid members={teamMembers} />
+  <Testimonials />
+  <section class="section-padding bg-white">
+    <div class="container-blog max-w-4xl">
+      <NewsletterCTA />
+    </div>
+  </section>
+</BaseLayout>

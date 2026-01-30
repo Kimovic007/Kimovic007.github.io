@@ -1,0 +1,55 @@
+---
+import ArticleCard from './ArticleCard.astro';
+import type { CollectionEntry } from 'astro:content';
+
+type AnyPost = CollectionEntry<'dogs'> | CollectionEntry<'cats'> | CollectionEntry<'products-reviews'>;
+
+const { featured, posts } = Astro.props as {
+  featured?: AnyPost;
+  posts: AnyPost[];
+};
+---
+<section class="section-padding" style="background-color: var(--color-alabaster);">
+  <div class="container-blog">
+    <div class="flex flex-col md:flex-row md:items-end md:justify-between mb-12">
+      <div>
+        <span class="font-semibold text-sm uppercase tracking-wide" style="color: var(--color-champagne);">Latest Articles</span>
+        <h2 class="text-3xl md:text-4xl font-heading font-bold mt-2" style="color: var(--color-forest-green);">
+          Fresh Pet Care Insights
+        </h2>
+      </div>
+      <a href="/blog" class="font-semibold flex items-center gap-2 hover:gap-3 transition-all mt-4 md:mt-0" style="color: var(--color-forest-green);">
+        View All Articles
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+        </svg>
+      </a>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      {featured && (
+        <ArticleCard
+          title={featured.data.title}
+          description={featured.data.description}
+          image={featured.data.heroImage}
+          tags={featured.data.tags}
+          href={`/blog/${featured.slug}`}
+          date={featured.data.pubDate.toString()}
+          readingTime={featured.data.readingTime}
+          featured={true}
+        />
+      )}
+      {posts.map(post => (
+        <ArticleCard
+          title={post.data.title}
+          description={post.data.description}
+          image={post.data.heroImage}
+          tags={post.data.tags}
+          href={`/blog/${post.slug}`}
+          date={post.data.pubDate.toString()}
+          readingTime={post.data.readingTime}
+        />
+      ))}
+    </div>
+  </div>
+</section>

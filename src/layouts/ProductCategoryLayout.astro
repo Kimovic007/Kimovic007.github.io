@@ -1,0 +1,99 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import NewsletterCTA from '../components/NewsletterCTA.astro';
+import ProductGrid from '../components/ProductGrid.astro';
+import Pagination from '../components/Pagination.astro';
+import type { ProductCategory } from '../data/products';
+import type { Page } from 'astro';
+
+interface Props {
+  category: ProductCategory;
+  page: Page;
+}
+
+const { category, page } = Astro.props;
+
+// JSON-LD structured data for product category
+const categorySchema = {
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  "name": category.title,
+  "description": category.description,
+  "url": Astro.url.href,
+  "isPartOf": {
+    "@type": "WebSite",
+    "name": "Pet Care Blog",
+    "url": Astro.site
+  }
+};
+---
+
+<BaseLayout 
+  title={`${category.title} | Pet Products`}
+  description={category.description}
+  type="website"
+>
+  <script type="application/ld+json" set:html={JSON.stringify(categorySchema)} />
+  
+  <div class="container-blog py-8">
+    <!-- Breadcrumb Navigation -->
+    <nav class="flex items-center gap-2 text-sm mb-8" style="color: var(--color-slate-grey);" aria-label="Breadcrumb">
+      <a href="/" class="hover:opacity-80 transition-colors" style="color: var(--color-forest-green);">Home</a>
+      <span style="color: var(--color-warm-taupe);">/</span>
+      <a href="/products" class="hover:opacity-80 transition-colors" style="color: var(--color-forest-green);">Products</a>
+      <span style="color: var(--color-warm-taupe);">/</span>
+      <span class="font-medium" style="color: var(--color-forest-green);">{category.title}</span>
+    </nav>
+
+    <!-- Two-column layout: sidebar + main content -->
+    <div class="flex flex-col lg:flex-row gap-12">
+      <!-- Sidebar (for future filters/sorting) -->
+      <aside class="w-full lg:w-64 order-2 lg:order-1">
+        <div class="lg:sticky lg:top-8">
+          <!-- Empty for now, ready for filters -->
+          <div class="rounded-2xl p-6" style="background-color: var(--color-alabaster);">
+            <p class="text-sm text-center" style="color: var(--color-warm-taupe);">
+              Filters coming soon
+            </p>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Main content -->
+      <main class="flex-1 order-1 lg:order-2">
+        <!-- Category Header -->
+        <div class="mb-12">
+          <div class="flex items-center gap-4 mb-4">
+            <span class="text-5xl">{category.icon}</span>
+            <div>
+              <h1 class="text-4xl font-heading font-bold mb-2" style="color: var(--color-forest-green);">
+                {category.title}
+              </h1>
+              <p class="text-lg" style="color: var(--color-warm-taupe);">
+                {page.total} {page.total === 1 ? 'product' : 'products'}
+              </p>
+            </div>
+          </div>
+          <p class="leading-relaxed" style="color: var(--color-slate-grey);">
+            {category.description}
+          </p>
+        </div>
+
+        <!-- Products Grid -->
+        <ProductGrid products={page.data} columns="4" categoryLabel={category.title} />
+
+        <!-- Pagination -->
+        <Pagination 
+          currentPage={page.currentPage}
+          totalPages={page.lastPage}
+          basePath={`/products/${category.id}`}
+        />
+      </main>
+    </div>
+
+    <!-- Newsletter CTA -->
+    <div class="mt-16">
+      <NewsletterCTA />
+    </div>
+  </div>
+</BaseLayout>

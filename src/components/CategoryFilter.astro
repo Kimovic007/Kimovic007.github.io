@@ -1,0 +1,29 @@
+---
+import { TAG_CATEGORIES, getCategoryPrimaryTags, type TagCategory } from '../utils/tags';
+
+// Get primary tags for each category to use as links
+const categoryPrimaryTags = getCategoryPrimaryTags();
+const categories = Object.keys(TAG_CATEGORIES) as TagCategory[];
+---
+<section class="bg-white sticky top-20 z-40" style="border-bottom: 1px solid var(--color-warm-taupe);">
+  <div class="container-blog py-4">
+    <div class="flex items-center gap-4 overflow-x-auto pb-2">
+      <a
+        href="/blog"
+        class="px-4 py-2 text-white font-medium rounded-full text-sm whitespace-nowrap"
+        style="background-color: var(--color-forest-green);"
+      >
+        All Posts
+      </a>
+      {categories.map(category => (
+        <a
+          href={`/tag/${categoryPrimaryTags[category].toLowerCase()}`}
+          class="px-4 py-2 font-medium rounded-full text-sm whitespace-nowrap transition-colors"
+          style="background-color: var(--color-alabaster); color: var(--color-slate-grey);"
+        >
+          {category}
+        </a>
+      ))}
+    </div>
+  </div>
+</section>

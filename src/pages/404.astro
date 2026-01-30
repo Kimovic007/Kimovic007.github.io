@@ -1,0 +1,24 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="Page Not Found | Aevum Pets"
+  description="We couldn't find the page you were looking for. Explore curated pet care instead."
+>
+  <section class="section-padding" style="background-color: var(--color-alabaster);">
+    <div class="container-blog max-w-3xl text-center">
+      <p class="caption-editorial">404 — Page Not Found</p>
+      <h1 class="text-4xl md:text-5xl font-heading font-bold mt-4 mb-6" style="color: var(--color-forest-green);">
+        This page has wandered off.
+      </h1>
+      <p class="text-lg mb-8" style="color: var(--color-slate-grey);">
+        The link may be broken or the page may have been moved. Let us guide you back to curated care.
+      </p>
+      <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <a href="/" class="btn-primary">Return Home</a>
+        <a href="/blog" class="btn-secondary">Browse the Journal</a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

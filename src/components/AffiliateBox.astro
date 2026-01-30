@@ -1,0 +1,88 @@
+---
+interface Props {
+  product: {
+    name: string;
+    image: string;
+    price: string;
+    originalPrice?: string;
+    rating?: number;
+    link: string;
+    description?: string;
+    discount?: string;
+    dealEndTime?: string; // ISO date string or time remaining
+  };
+}
+
+const { product } = Astro.props;
+---
+
+<div class="bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl p-6 shadow-xl relative overflow-hidden">
+  <!-- Decorative tag icon -->
+  <div class="absolute top-4 right-4 opacity-10">
+    <svg class="w-24 h-24 text-slate-600" fill="currentColor" viewBox="0 0 24 24">
+      <path d="M21.41 11.58l-9-9C12.05 2.22 11.55 2 11 2H4c-1.1 0-2 .9-2 2v7c0 .55.22 1.05.59 1.42l9 9c.36.36.86.58 1.41.58.55 0 1.05-.22 1.41-.59l7-7c.37-.36.59-.86.59-1.41 0-.55-.23-1.06-.59-1.42zM5.5 7C4.67 7 4 6.33 4 5.5S4.67 4 5.5 4 7 4.67 7 5.5 6.33 7 5.5 7z"/>
+    </svg>
+  </div>
+
+  <!-- Limited Time Badge and Timer -->
+  <div class="flex items-center gap-2 mb-4 relative z-10">
+    <span class="bg-red-500 text-white text-xs font-bold px-3 py-1.5 rounded-full uppercase tracking-wider">
+      Limited Time
+    </span>
+    <span class="text-white/80 text-xs font-medium">
+      Ends in 4h
+    </span>
+  </div>
+
+  <!-- Deal Title -->
+  <h3 class="text-white text-xl font-bold mb-4 leading-tight relative z-10">
+    {product.discount || 'Save 20%'} on {product.name}
+  </h3>
+
+  <!-- Product Image Container -->
+  <a href={product.link} target="_blank" rel="noopener noreferrer sponsored" class="block mb-4">
+    <div class="bg-slate-700/50 rounded-xl overflow-hidden backdrop-blur-sm relative z-10 hover:bg-slate-700/70 transition-all duration-300">
+      <img 
+        src={product.image} 
+        alt={product.name}
+        class="w-full h-48 object-cover"
+        loading="lazy"
+      />
+    </div>
+  </a>
+
+  <!-- Price -->
+  <div class="flex items-baseline gap-2 mb-4 relative z-10">
+    <span class="text-white text-3xl font-bold">{product.price}</span>
+    {product.originalPrice && (
+      <span class="text-slate-400 text-lg line-through">{product.originalPrice}</span>
+    )}
+  </div>
+
+  <!-- CTA Button -->
+  <a 
+    href={product.link}
+    target="_blank"
+    rel="noopener noreferrer sponsored"
+    class="block w-full py-3 text-white text-center font-bold rounded-xl transition-all duration-300 text-base shadow-lg relative z-10"
+    style="background-color: var(--color-champagne); color: var(--color-forest-green);"
+  >
+    Get Deal Now
+  </a>
+</div>
+
+<style>
+  /* Optional: Add subtle animation to the decorative tag */
+  @keyframes float {
+    0%, 100% {
+      transform: translateY(0px) rotate(0deg);
+    }
+    50% {
+      transform: translateY(-10px) rotate(5deg);
+    }
+  }
+  
+  .absolute svg {
+    animation: float 6s ease-in-out infinite;
+  }
+</style>

@@ -1,0 +1,23 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ContentPage from '../components/ContentPage.astro';
+import NewsletterCTA from '../components/NewsletterCTA.astro';
+---
+
+<BaseLayout
+  title="Subscribe | Aevum Pets"
+  description="Join the Aevum Pets newsletter for curated pet care insights, product edits, and wellness guidance."
+>
+  <ContentPage title="Stay Curated">
+    <p class="text-xl" style="color: var(--color-slate-grey);">
+      Discover weekly edits for holistic pet living—rooted in veterinary science and refined design.
+    </p>
+    <ul class="list-disc pl-6 my-6 space-y-2">
+      <li>Curated care guides for modern pet parents.</li>
+      <li>Research-led product recommendations and reviews.</li>
+      <li>Design-forward ideas for calm, beautiful pet spaces.</li>
+    </ul>
+
+    <NewsletterCTA />
+  </ContentPage>
+</BaseLayout>

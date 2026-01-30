@@ -1,0 +1,170 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+import { groupTagsByCategory, getUniqueTags, filterPostsByTag, getTagCategory } from '../utils/tags';
+
+// Get all posts
+const dogsPosts = await getCollection('dogs');
+const catsPosts = await getCollection('cats');
+const productsPosts = await getCollection('products-reviews');
+const allPosts = [...dogsPosts, ...catsPosts, ...productsPosts];
+
+// Group predefined tags by category
+const tagsByCategory = groupTagsByCategory();
+
+// Get all unique tags from content
+const contentTags = getUniqueTags(allPosts);
+
+// Find tags that are used in content but not in any category ("Other" tags)
+const otherTags = contentTags.filter(tag => !getTagCategory(tag));
+
+// Get count of posts for each tag
+const getPostCountForTag = (tag: string) => {
+  return filterPostsByTag(allPosts, tag).length;
+};
+---
+
+<BaseLayout
+  title="Blog Tags | Pet Care Blog"
+  description="Browse all blog posts by tag. Find articles about dog care, cat care, nutrition, training, and more."
+  type="website"
+>
+  <div class="min-h-screen" style="background-color: var(--color-alabaster);">
+    <!-- Hero Section -->
+    <section class="py-16 md:py-24" style="background-color: var(--color-forest-green);">
+      <div class="container-blog">
+        <div class="text-center">
+          <h1 class="text-5xl md:text-6xl lg:text-7xl font-heading font-bold text-white mb-6">
+            Explore by Topic
+          </h1>
+          <p class="text-xl md:text-2xl max-w-3xl mx-auto" style="color: var(--color-alabaster); opacity: 0.9;">
+            Discover our comprehensive collection of pet care articles organized by tag. Find the perfect guide for your pet's needs.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Tags Section -->
+    <section class="py-16 md:py-24">
+      <div class="container-blog">
+        <!-- Tags Grid by Category -->
+        <div class="space-y-16">
+          {Object.entries(tagsByCategory).map(([category, categoryTags]) => {
+            const tagsWithCounts = categoryTags
+              .map(tag => ({
+                tag,
+                count: getPostCountForTag(tag),
+              }))
+              .filter(t => t.count > 0)
+              .sort((a, b) => b.count - a.count);
+
+            if (tagsWithCounts.length === 0) return null;
+
+            return (
+              <div>
+                <h2 class="text-3xl md:text-4xl font-heading font-bold mb-8 pb-4 border-b-2" style="color: var(--color-forest-green); border-color: var(--color-champagne);">
+                  {category}
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {tagsWithCounts.map(({ tag, count }) => (
+                    <a
+                      href={`/tag/${tag.toLowerCase()}`}
+                      class="group p-6 rounded-xl bg-white border-2 hover:shadow-lg transition-all duration-300"
+                      style="border-color: var(--color-warm-taupe);"
+                    >
+                      <div class="flex items-center justify-between">
+                        <div>
+                          <h3 class="text-lg font-semibold transition-colors capitalize" style="color: var(--color-forest-green);">
+                            {tag}
+                          </h3>
+                          <p class="text-sm mt-1" style="color: var(--color-warm-taupe);">
+                            {count} {count === 1 ? 'article' : 'articles'}
+                          </p>
+                        </div>
+                        <div class="flex items-center justify-center w-10 h-10 rounded-full font-semibold transition-colors" style="background-color: var(--color-champagne); color: var(--color-forest-green);">
+                          {count}
+                        </div>
+                      </div>
+                    </a>
+                  ))}
+                </div>
+              </div>
+            );
+          })}
+
+          {/* Other Tags (not in any predefined category) */}
+          {otherTags.length > 0 && (() => {
+            const otherTagsWithCounts = otherTags
+              .map(tag => ({
+                tag,
+                count: getPostCountForTag(tag),
+              }))
+              .filter(t => t.count > 0)
+              .sort((a, b) => b.count - a.count);
+
+            if (otherTagsWithCounts.length === 0) return null;
+
+            return (
+              <div>
+                <h2 class="text-3xl md:text-4xl font-heading font-bold mb-8 pb-4 border-b-2" style="color: var(--color-forest-green); border-color: var(--color-warm-taupe);">
+                  Other Topics
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {otherTagsWithCounts.map(({ tag, count }) => (
+                    <a
+                      href={`/tag/${tag.toLowerCase()}`}
+                      class="group p-6 rounded-xl bg-white border-2 hover:shadow-lg transition-all duration-300"
+                      style="border-color: var(--color-warm-taupe);"
+                    >
+                      <div class="flex items-center justify-between">
+                        <div>
+                          <h3 class="text-lg font-semibold transition-colors capitalize" style="color: var(--color-forest-green);">
+                            {tag}
+                          </h3>
+                          <p class="text-sm mt-1" style="color: var(--color-warm-taupe);">
+                            {count} {count === 1 ? 'article' : 'articles'}
+                          </p>
+                        </div>
+                        <div class="flex items-center justify-center w-10 h-10 rounded-full font-semibold transition-colors" style="background-color: var(--color-alabaster); color: var(--color-slate-grey);">
+                          {count}
+                        </div>
+                      </div>
+                    </a>
+                  ))}
+                </div>
+              </div>
+            );
+          })()}
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="py-16 md:py-24" style="background-color: var(--color-forest-green);">
+      <div class="container-blog text-center">
+        <h2 class="text-4xl md:text-5xl font-heading font-bold text-white mb-6">
+          Can't Find What You're Looking For?
+        </h2>
+        <p class="text-xl mb-8 max-w-2xl mx-auto" style="color: var(--color-alabaster); opacity: 0.9;">
+          Check out our main blog or browse by collection to discover more pet care content.
+        </p>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+          <a
+            href="/blog"
+            class="px-8 py-3 font-semibold rounded-lg transition-colors"
+            style="background-color: var(--color-champagne); color: var(--color-forest-green);"
+          >
+            Browse All Articles
+          </a>
+          <a
+            href="/"
+            class="px-8 py-3 border-2 border-white text-white font-semibold rounded-lg hover:bg-white transition-colors"
+            style="--tw-border-opacity: 1;"
+          >
+            Back to Home
+          </a>
+        </div>
+      </div>
+    </section>
+  </div>
+</BaseLayout>

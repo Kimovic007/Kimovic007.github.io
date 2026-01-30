@@ -1,0 +1,102 @@
+---
+import { getTopicFromTags } from '../utils/tags';
+
+interface Props {
+  title: string;
+  description: string;
+  image: string;
+  imageAlt?: string;
+  tags: string[];
+  href?: string;
+  slug?: string;
+  date?: string;
+  pubDate?: string;
+  readingTime: string;
+  author?: string;
+  featured?: boolean;
+}
+
+const { 
+  title, 
+  description, 
+  image, 
+  imageAlt = title,
+  tags, 
+  href,
+  slug,
+  date,
+  pubDate,
+  readingTime, 
+  author,
+  featured = false 
+} = Astro.props;
+
+// Derive topic from tags
+const topic = getTopicFromTags(tags) || 'General';
+
+// Determine the href - use slug if provided, otherwise use href
+const postHref = slug ? `/blog/${slug}` : href || '#';
+
+// Determine the date - use pubDate if provided, otherwise use date
+const postDate = pubDate || date || new Date().toISOString();
+
+// Get primary tag for link (first tag that maps to the topic)
+const primaryTag = tags.find(t => getTopicFromTags([t])) || tags[0];
+const tagLink = primaryTag ? `/tag/${primaryTag.toLowerCase()}` : '/tags';
+
+const formattedDate = new Date(postDate).toLocaleDateString('en-US', {
+  month: 'short',
+  day: 'numeric',
+  year: 'numeric'
+});
+---
+
+<article class:list={["card card-hover group", featured && "md:col-span-2 md:flex"]} transition:name={`article-${title.replace(/\s+/g, '-').toLowerCase()}`}>
+  <a href={postHref} class:list={["block overflow-hidden", featured ? "md:w-1/2" : ""]}>
+    <img 
+      src={image} 
+      alt={imageAlt}
+      class:list={[
+        "w-full object-cover transition-transform duration-500 group-hover:scale-105",
+        featured ? "h-64 md:h-full" : "h-52"
+      ]}
+      loading="lazy"
+    />
+  </a>
+  <div class:list={["p-6", featured && "md:w-1/2 md:flex md:flex-col md:justify-center"]}>
+    <div class="flex items-center gap-3 mb-3">
+      <a 
+        href={tagLink}
+        class="text-xs font-semibold uppercase tracking-wide"
+        style="color: var(--color-champagne);"
+      >
+        {topic}
+      </a>
+      <span style="color: var(--color-warm-taupe);">•</span>
+      <span class="text-xs" style="color: var(--color-warm-taupe);">{readingTime}</span>
+    </div>
+    <h3 class:list={[
+      "font-heading font-bold mb-3 transition-colors",
+      featured ? "text-2xl md:text-3xl" : "text-xl"
+    ]} style="color: var(--color-forest-green);">
+      <a href={postHref}>{title}</a>
+    </h3>
+    <p class:list={["mb-4 line-clamp-2", featured && "md:line-clamp-3"]} style="color: var(--color-slate-grey);">
+      {description}
+    </p>
+    <div class="flex items-center justify-between">
+      <time datetime={postDate} class="text-sm" style="color: var(--color-warm-taupe);">{formattedDate}</time>
+      <a 
+        href={postHref}
+        class="font-semibold text-sm flex items-center gap-1 hover:gap-2 transition-all"
+        style="color: var(--color-forest-green);"
+      >
+        Read More
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+        </svg>
+      </a>
+    </div>
+  </div>
+</article>
+

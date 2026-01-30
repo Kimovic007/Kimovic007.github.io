@@ -1,0 +1,50 @@
+---
+import ProductCard from './ProductCard.astro';
+import { productCategories } from '../data/products';
+
+interface Props {
+  id: string;
+}
+
+const { id } = Astro.props;
+
+// Fetch product by ID from all categories
+const product = productCategories
+  .flatMap(cat => cat.products)
+  .find(p => p.id === id);
+---
+
+<div class="my-8 flex justify-center">
+  <div class="w-full max-w-3xl">
+    {product ? (
+      <ProductCard
+        name={product.name}
+        image={product.image}
+        price={product.price}
+        originalPrice={product.originalPrice}
+        rating={product.rating}
+        reviewCount={product.reviewCount}
+        link={product.link}
+        description={product.description}
+        badge={product.badge}
+        features={product.features}
+        category="Featured Product"
+      />
+    ) : (
+      <div class="rounded-lg border-2 p-6 shadow-sm" style="border-color: var(--color-warm-taupe); background-color: var(--color-alabaster);">
+        <div class="flex items-start gap-3">
+          <svg class="h-6 w-6 flex-shrink-0" style="color: var(--color-warm-taupe);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+          </svg>
+          <div class="flex-1">
+            <h3 class="text-lg font-semibold" style="color: var(--color-forest-green);">Product Not Found</h3>
+            <p class="mt-1 text-sm" style="color: var(--color-slate-grey);">
+              The product with ID "<code class="rounded px-1.5 py-0.5 font-mono text-xs" style="background-color: white;">{id}</code>" could not be found. 
+              Please check the product ID and try again.
+            </p>
+          </div>
+        </div>
+      </div>
+    )}
+  </div>
+</div>

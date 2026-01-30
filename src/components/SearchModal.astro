@@ -1,0 +1,157 @@
+---
+import { getCollection } from 'astro:content';
+import { productCategories } from '../data/products';
+
+// Fetch all articles from all collections
+const [dogs, cats, productsReviews] = await Promise.all([
+  getCollection('dogs'),
+  getCollection('cats'),
+  getCollection('products-reviews'),
+]);
+
+// Build searchable articles data
+const articles = [...dogs, ...cats, ...productsReviews].map((post) => ({
+  title: post.data.title,
+  description: post.data.description,
+  slug: post.slug,
+  collection: post.collection,
+  heroImage: post.data.heroImage,
+}));
+
+// Build searchable products data
+const products = productCategories.flatMap((category) =>
+  category.products.map((product) => ({
+    name: product.name,
+    description: product.description,
+    features: product.features || [],
+    category: category.title,
+    categoryId: category.id,
+    link: product.link,
+    image: product.image,
+    price: product.price,
+  }))
+);
+---
+
+<!-- Search Modal Overlay -->
+<div
+  id="search-overlay"
+  class="fixed inset-0 bg-black/50 backdrop-blur-sm z-[60] hidden"
+  aria-hidden="true"
+></div>
+
+<!-- Search Modal -->
+<div
+  id="search-modal"
+  class="fixed inset-0 z-[70] hidden flex items-start justify-center pt-20 px-4"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="search-title"
+>
+  <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[80vh] flex flex-col">
+    <!-- Search Header -->
+    <div class="p-4" style="border-bottom: 1px solid var(--color-warm-taupe);">
+      <div class="flex items-center gap-3">
+        <!-- Search Icon -->
+        <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: var(--color-warm-taupe);">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+        </svg>
+        
+        <!-- Search Input -->
+        <input
+          type="search"
+          id="search-input"
+          class="flex-1 text-lg outline-none"
+          style="color: var(--color-forest-green);"
+          placeholder="Search articles and products..."
+          aria-label="Search articles and products"
+          autocomplete="off"
+        />
+        
+        <!-- Keyboard Shortcut Hint -->
+        <kbd class="hidden sm:inline-flex items-center gap-1 px-2 py-1 text-xs font-medium rounded" style="color: var(--color-warm-taupe); background-color: var(--color-alabaster);">
+          ESC
+        </kbd>
+        
+        <!-- Close Button -->
+        <button
+          type="button"
+          id="search-close"
+          class="p-2 rounded-lg transition-colors"
+          aria-label="Close search"
+          style="color: var(--color-slate-grey);"
+        >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+    
+    <!-- Search Results -->
+    <div id="search-results" class="flex-1 overflow-y-auto p-4">
+      <!-- Initial State -->
+      <div id="search-initial" class="text-center py-12">
+        <svg class="w-16 h-16 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: var(--color-warm-taupe);">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+        </svg>
+        <p style="color: var(--color-slate-grey);">Start typing to search...</p>
+        <p class="text-sm mt-2" style="color: var(--color-warm-taupe);">Search articles, guides, and products</p>
+      </div>
+      
+      <!-- No Results State -->
+      <div id="search-empty" class="text-center py-12 hidden">
+        <svg class="w-16 h-16 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: var(--color-warm-taupe);">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+        <p style="color: var(--color-slate-grey);">No results found for "<span id="search-query-display"></span>"</p>
+        <p class="text-sm mt-2" style="color: var(--color-warm-taupe);">Try different keywords</p>
+      </div>
+      
+      <!-- Articles Results -->
+      <div id="search-articles" class="hidden">
+        <h3 class="text-xs font-semibold uppercase tracking-wider mb-3" style="color: var(--color-warm-taupe);">Articles</h3>
+        <div id="search-articles-list" class="space-y-2"></div>
+      </div>
+      
+      <!-- Products Results -->
+      <div id="search-products" class="hidden mt-6">
+        <h3 class="text-xs font-semibold uppercase tracking-wider mb-3" style="color: var(--color-warm-taupe);">Products</h3>
+        <div id="search-products-list" class="space-y-2"></div>
+      </div>
+    </div>
+    
+    <!-- Search Footer -->
+    <div class="p-3 rounded-b-2xl" style="border-top: 1px solid var(--color-warm-taupe); background-color: var(--color-alabaster);">
+      <div class="flex items-center justify-between text-xs" style="color: var(--color-warm-taupe);">
+        <div class="flex items-center gap-4">
+          <span class="flex items-center gap-1">
+            <kbd class="px-1.5 py-0.5 bg-white rounded" style="border: 1px solid var(--color-warm-taupe);">↑</kbd>
+            <kbd class="px-1.5 py-0.5 bg-white rounded" style="border: 1px solid var(--color-warm-taupe);">↓</kbd>
+            to navigate
+          </span>
+          <span class="flex items-center gap-1">
+            <kbd class="px-1.5 py-0.5 bg-white rounded" style="border: 1px solid var(--color-warm-taupe);">Enter</kbd>
+            to select
+          </span>
+        </div>
+        <span class="hidden sm:inline">
+          <kbd class="px-1.5 py-0.5 bg-white rounded" style="border: 1px solid var(--color-warm-taupe);">⌘</kbd>
+          <kbd class="px-1.5 py-0.5 bg-white rounded" style="border: 1px solid var(--color-warm-taupe);">K</kbd>
+          to search
+        </span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script define:vars={{ articles, products }}>
+  // Store data in window for access in the main script
+  window.__searchData = { articles, products };
+</script>
+
+<script>
+  import { initSearch } from '../utils/search';
+  initSearch();
+</script>
+

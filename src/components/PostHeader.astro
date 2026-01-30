@@ -1,0 +1,99 @@
+---
+import { getTagCategory, getTopicFromTags, COLLECTIONS } from '../utils/tags';
+
+interface Props {
+  title: string;
+  description: string;
+  tags: string[];
+  collection: 'dogs' | 'cats' | 'products-reviews';
+  readingTime: string;
+  author: string;
+  authorImage: string;
+  pubDate: string;
+  updatedDate?: string;
+}
+
+const { title, description, tags, collection, readingTime, author, authorImage, pubDate, updatedDate } = Astro.props;
+
+// Format date
+const formattedDate = new Date(pubDate).toLocaleDateString('en-US', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric'
+});
+
+// Get collection display name
+const collectionName = COLLECTIONS[collection];
+
+// Get primary tag category (first tag's category)
+const primaryTag = tags.length > 0 ? tags[0] : null;
+const tagCategory = primaryTag ? getTagCategory(primaryTag) : null;
+---
+
+<header class="mb-12">
+  <!-- Breadcrumb -->
+  <nav class="mb-6" aria-label="Breadcrumb">
+    <ol class="flex items-center space-x-2 text-sm" style="color: var(--color-warm-taupe);">
+      <li><a href="/" style="color: var(--color-forest-green);">Home</a></li>
+      <li><span>/</span></li>
+      <li>
+        <a href={`/collection/${collection}`} class="capitalize" style="color: var(--color-forest-green);">
+          {collectionName}
+        </a>
+      </li>
+      <li><span>/</span></li>
+      {tagCategory && (
+        <>
+          <li>
+            <a href={`/tag/${primaryTag?.toLowerCase()}`} class="capitalize" style="color: var(--color-forest-green);">
+              {tagCategory}
+            </a>
+          </li>
+          <li><span>/</span></li>
+        </>
+      )}
+      <li class="font-medium truncate max-w-[200px]" style="color: var(--color-forest-green);">{title}</li>
+    </ol>
+  </nav>
+
+  <!-- Category Badge and Reading Time -->
+  <div class="flex items-center gap-4 mb-6">
+    <a 
+      href={`/collection/${collection}`}
+      class="px-4 py-1.5 font-semibold rounded-full text-sm transition-colors capitalize"
+      style="background-color: rgba(27, 59, 54, 0.1); color: var(--color-forest-green);"
+    >
+      {collectionName}
+    </a>
+    <span class="text-sm" style="color: var(--color-warm-taupe);">{readingTime}</span>
+  </div>
+
+  <!-- Title and Description -->
+  <h1 class="text-4xl md:text-5xl lg:text-6xl font-heading font-bold mb-6 leading-tight" style="color: var(--color-forest-green);">
+    {title}
+  </h1>
+
+  <p class="text-xl mb-8 max-w-3xl" style="color: var(--color-slate-grey);">
+    {description}
+  </p>
+
+  <!-- Author and Date -->
+  <div class="flex items-center gap-4">
+    <img 
+      src={authorImage} 
+      alt={author}
+      class="w-12 h-12 rounded-full object-cover"
+    />
+    <div>
+      <p class="font-semibold" style="color: var(--color-forest-green);">{author}</p>
+      <p class="text-sm" style="color: var(--color-warm-taupe);">
+        <time datetime={pubDate}>{formattedDate}</time>
+        {updatedDate && (
+          <span> · Updated <time datetime={updatedDate}>
+            {new Date(updatedDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+          </time></span>
+        )}
+      </p>
+    </div>
+  </div>
+</header>

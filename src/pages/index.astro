@@ -1,0 +1,49 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+import HomeHero from '../components/HomeHero.astro';
+import CategoryGrid from '../components/CategoryGrid.astro';
+import ArticlesSection from '../components/ArticlesSection.astro';
+import ProductsSection from '../components/ProductsSection.astro';
+import QuickTips from '../components/QuickTips.astro';
+import Testimonials from '../components/Testimonials.astro';
+import TrustBar from '../components/TrustBar.astro';
+import NewsletterCTA from '../components/NewsletterCTA.astro';
+import { categoryMeta, featuredProducts, quickTips } from '../data/home';
+import { filterPostsByCategory } from '../utils/tags';
+
+// Get all blog posts from all collections
+const dogsPosts = await getCollection('dogs');
+const catsPosts = await getCollection('cats');
+const productsPosts = await getCollection('products-reviews');
+
+const allPosts = [...dogsPosts, ...catsPosts, ...productsPosts];
+const categories = categoryMeta.map(meta => ({
+  ...meta,
+  count: meta.name === 'All Tags' ? allPosts.length : filterPostsByCategory(allPosts, meta.name).length,
+}));
+const sortedPosts = [...allPosts].sort((a, b) =>
+  new Date(b.data.pubDate).getTime() - new Date(a.data.pubDate).getTime()
+);
+
+const featuredPost = sortedPosts.find(post => post.data.featured) || sortedPosts[0];
+const recentPosts = sortedPosts.filter(post => post.slug !== featuredPost?.slug).slice(0, 4);
+---
+
+<BaseLayout 
+  title="Pet Care Blog - Expert Advice for Happy, Healthy Pets"
+  description="Your trusted source for pet care tips, product reviews, and expert advice. Learn how to keep your dogs and cats happy and healthy with our comprehensive guides."
+>
+  <HomeHero />
+  <TrustBar />
+  <CategoryGrid items={categories} />
+  <ArticlesSection featured={featuredPost} posts={recentPosts} />
+  <ProductsSection products={featuredProducts} />
+  <Testimonials />
+  <section class="section-padding bg-white">
+    <div class="container-blog max-w-4xl">
+      <NewsletterCTA />
+    </div>
+  </section>
+  <QuickTips items={quickTips} />
+</BaseLayout>

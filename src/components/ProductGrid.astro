@@ -1,0 +1,20 @@
+---
+import ProductCard from './ProductCard.astro';
+import type { FeaturedProduct } from '../data/home';
+
+interface Props {
+  products: FeaturedProduct[];
+  columns?: '3' | '4';
+  categoryLabel?: string;
+}
+
+const { products, columns: _columns = '3', categoryLabel } = Astro.props as Props;
+
+const gridCols = 'grid-cols-1 md:grid-cols-2';
+---
+
+<div class={`grid ${gridCols} gap-6 md:gap-8`}>
+  {products.map(product => (
+    <ProductCard {...product} category={categoryLabel} />
+  ))}
+</div>

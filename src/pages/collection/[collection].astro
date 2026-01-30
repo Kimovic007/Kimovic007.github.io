@@ -1,0 +1,180 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+import { COLLECTIONS } from '../../utils/tags';
+import ArticleCard from '../../components/ArticleCard.astro';
+
+export async function getStaticPaths() {
+  const collections = ['dogs', 'cats', 'products-reviews'];
+  return collections.map(collection => ({
+    params: { collection },
+    props: { collection },
+  }));
+}
+
+interface Props {
+  collection: 'dogs' | 'cats' | 'products-reviews';
+}
+
+const { collection } = Astro.props;
+const collectionName = COLLECTIONS[collection];
+
+// Get collection posts
+let posts: any[] = [];
+if (collection === 'dogs') {
+  posts = await getCollection('dogs');
+} else if (collection === 'cats') {
+  posts = await getCollection('cats');
+} else if (collection === 'products-reviews') {
+  posts = await getCollection('products-reviews');
+}
+
+// Sort by date descending
+posts.sort((a, b) => 
+  new Date(b.data.pubDate).getTime() - new Date(a.data.pubDate).getTime()
+);
+
+const collectionDescriptions: Record<string, { title: string; description: string }> = {
+  dogs: {
+    title: 'Dog Care & Training',
+    description: 'Comprehensive guides on dog nutrition, training, health, and wellness. From puppies to senior dogs, find everything you need to care for your furry companion.',
+  },
+  cats: {
+    title: 'Cat Care & Tips',
+    description: 'Expert advice on cat behavior, nutrition, health, and lifestyle. Learn how to provide the best care for your feline friend.',
+  },
+  'products-reviews': {
+    title: 'Product Reviews',
+    description: 'In-depth reviews of pet products including food, toys, accessories, and more. Make informed decisions for your pet.',
+  },
+};
+
+const meta = collectionDescriptions[collection];
+---
+
+<BaseLayout
+  title={`${collectionName} | Pet Care Blog`}
+  description={meta.description}
+  type="website"
+>
+  <div class="min-h-screen" style="background-color: var(--color-alabaster);">
+    <!-- Hero Section -->
+    <section class="py-12 md:py-20" style="background-color: var(--color-forest-green);">
+      <div class="container-blog">
+        <div class="flex items-center gap-4 mb-6">
+          <a
+            href="/"
+            class="transition-colors"
+            style="color: var(--color-alabaster); opacity: 0.8;"
+          >
+            ← Home
+          </a>
+        </div>
+        <div>
+          <h1 class="text-5xl md:text-6xl lg:text-7xl font-heading font-bold text-white mb-6">
+            {meta.title}
+          </h1>
+          <p class="text-xl md:text-2xl max-w-3xl mb-6" style="color: var(--color-alabaster); opacity: 0.9;">
+            {meta.description}
+          </p>
+          <p class="text-lg" style="color: var(--color-alabaster); opacity: 0.8;">
+            {posts.length} {posts.length === 1 ? 'article' : 'articles'} available
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Articles Section -->
+    <section class="py-16 md:py-24">
+      <div class="container-blog">
+        {posts.length === 0 ? (
+          <div class="text-center py-16">
+            <p class="text-xl mb-8" style="color: var(--color-warm-taupe);">No articles found in this collection.</p>
+            <a
+              href="/"
+              class="inline-block px-6 py-3 text-white font-semibold rounded-lg transition-colors"
+              style="background-color: var(--color-forest-green);"
+            >
+              Back to Home
+            </a>
+          </div>
+        ) : (
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {posts.map((post, index) => (
+              <ArticleCard
+                title={post.data.title}
+                description={post.data.description}
+                image={post.data.heroImage}
+                imageAlt={post.data.heroImageAlt}
+                slug={post.slug}
+                tags={post.data.tags}
+                pubDate={post.data.pubDate}
+                author={post.data.author}
+                readingTime={post.data.readingTime}
+                featured={post.data.featured || false}
+              />
+            ))}
+          </div>
+        )}
+      </div>
+    </section>
+
+    <!-- Featured Tags in Collection -->
+    {posts.length > 0 && (
+      <section class="py-16 md:py-24" style="background-color: white;">
+        <div class="container-blog">
+          <h2 class="text-3xl font-heading font-bold mb-8" style="color: var(--color-forest-green);">
+            Popular Topics in {collectionName}
+          </h2>
+          <div class="flex flex-wrap gap-3">
+            {Array.from(
+              new Set(posts.flatMap(post => post.data.tags))
+            )
+              .sort()
+              .slice(0, 15)
+              .map(tag => (
+                <a
+                  href={`/tag/${tag.toLowerCase()}`}
+                  class="px-4 py-2 bg-white border-2 rounded-full text-sm transition-colors capitalize"
+                  style="border-color: var(--color-warm-taupe); color: var(--color-slate-grey);"
+                >
+                  {tag}
+                </a>
+              ))}
+          </div>
+        </div>
+      </section>
+    )}
+
+    <!-- CTA Section -->
+    <section class="py-16 md:py-24" style="background-color: var(--color-forest-green);">
+      <div class="container-blog text-center">
+        <h2 class="text-4xl md:text-5xl font-heading font-bold text-white mb-6">
+          Explore Other Collections
+        </h2>
+        <p class="text-xl mb-8 max-w-2xl mx-auto" style="color: var(--color-alabaster); opacity: 0.9;">
+          Discover articles from our other collections.
+        </p>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center flex-wrap">
+          {(['dogs', 'cats', 'products-reviews'] as const).map(coll => (
+            coll !== collection && (
+              <a
+                href={`/collection/${coll}`}
+                class="px-6 py-3 font-semibold rounded-lg transition-colors capitalize"
+                style="background-color: var(--color-champagne); color: var(--color-forest-green);"
+              >
+                {COLLECTIONS[coll]}
+              </a>
+            )
+          ))}
+          <a
+            href="/tags"
+            class="px-6 py-3 border-2 border-white text-white font-semibold rounded-lg hover:bg-white transition-colors"
+          >
+            Browse by Tag
+          </a>
+        </div>
+      </div>
+    </section>
+  </div>
+</BaseLayout>

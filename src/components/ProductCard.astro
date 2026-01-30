@@ -1,0 +1,152 @@
+---
+interface Props {
+  name: string;
+  image: string;
+  price: string;
+  originalPrice?: string;
+  rating: number;
+  reviewCount?: number;
+  link: string;
+  description: string;
+  badge?: string;
+  features?: string[];
+  category?: string;
+}
+
+const {
+  name,
+  image,
+  price,
+  originalPrice,
+  rating,
+  reviewCount = 0,
+  link,
+  description,
+  badge,
+  features = [],
+  category = 'Top Pick',
+} = Astro.props as Props;
+
+const safeName = name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+
+const parsePriceValue = (raw?: string | number) => {
+  if (raw === undefined) return null;
+  const numeric = typeof raw === 'number' ? raw : parseFloat(String(raw).replace(/[^0-9.]/g, ''));
+  return Number.isFinite(numeric) ? numeric : null;
+};
+
+const currentPriceValue = parsePriceValue(price);
+const originalPriceValue = parsePriceValue(originalPrice);
+const formattedCurrentPrice = currentPriceValue !== null ? `$${currentPriceValue.toFixed(2)}` : price;
+const formattedOriginalPrice = originalPriceValue !== null ? `$${originalPriceValue.toFixed(2)}` : originalPrice;
+const savingsPercentage = currentPriceValue !== null && originalPriceValue !== null && originalPriceValue > currentPriceValue
+  ? Math.round(((originalPriceValue - currentPriceValue) / originalPriceValue) * 100)
+  : null;
+
+const fullStars = Math.floor(rating);
+const hasHalfStar = rating % 1 >= 0.5;
+const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
+const starGradientId = `half-${safeName}`;
+const featureChips = features.slice(0, 3);
+---
+
+<article class="group relative flex h-full w-full flex-col overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-[0_2px_8px_rgba(0,0,0,0.06)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_30px_rgba(0,0,0,0.12)]">
+  <div class="flex flex-col md:flex-row">
+    <!-- Left: Image -->
+    <a href={link} target="_blank" rel="noopener noreferrer sponsored" class="relative w-full md:w-[40%] bg-gray-100 overflow-hidden">
+      <div
+        class="aspect-[4/3] md:aspect-auto md:h-full w-full bg-cover bg-center transition-transform duration-700 group-hover:scale-105"
+        style={`background-image: url("${image}")`}
+        data-alt={name}
+      ></div>
+      {badge && (
+        <div class="absolute top-4 left-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full shadow-sm text-xs font-bold uppercase tracking-wide text-gray-900">
+          {badge}
+        </div>
+      )}
+    </a>
+
+    <!-- Right: Content -->
+    <div class="flex flex-1 flex-col gap-4 p-6 md:p-7">
+      <div class="flex items-start justify-between gap-3">
+        <div class="space-y-1">
+          <p class="text-xs font-semibold uppercase tracking-wide" style="color: var(--color-champagne);">{category}</p>
+          <h3 class="text-xl md:text-2xl font-bold leading-tight" style="color: var(--color-forest-green);">
+            <a href={link} target="_blank" rel="noopener noreferrer sponsored">{name}</a>
+          </h3>
+        </div>
+        <button class="transition-colors" style="color: var(--color-warm-taupe);" aria-label="Save to favorites">
+          <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+          </svg>
+        </button>
+      </div>
+
+      <div class="flex items-center gap-2" style="color: var(--color-champagne);">
+        <div class="flex">
+          {Array.from({ length: fullStars }).map((_, idx) => (
+            <svg class="w-4 h-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+            </svg>
+          ))}
+          {hasHalfStar && (
+            <svg class="w-4 h-4" viewBox="0 0 20 20" fill={`url(#${starGradientId})`} aria-hidden="true">
+              <defs>
+                <linearGradient id={starGradientId}>
+                  <stop offset="50%" stop-color="currentColor" />
+                  <stop offset="50%" stop-color="#E5E7EB" />
+                </linearGradient>
+              </defs>
+              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+            </svg>
+          )}
+          {Array.from({ length: emptyStars }).map((_, idx) => (
+            <svg class="w-4 h-4 text-gray-200" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+            </svg>
+          ))}
+        </div>
+        <span class="text-sm font-semibold" style="color: var(--color-forest-green);">{rating.toFixed(1)}</span>
+        <span class="text-sm" style="color: var(--color-warm-taupe);">({reviewCount.toLocaleString()} reviews)</span>
+      </div>
+
+      <p class="text-sm md:text-base leading-relaxed line-clamp-2" style="color: var(--color-slate-grey);">{description}</p>
+
+      {featureChips.length > 0 && (
+        <div class="flex flex-wrap gap-2">
+          {featureChips.map((feature, idx) => (
+            <span class="inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-semibold" style="background-color: var(--color-alabaster); color: var(--color-forest-green);">
+              {feature}
+            </span>
+          ))}
+        </div>
+      )}
+
+      <div class="mt-auto flex items-end justify-between gap-4 pt-4" style="border-top: 1px solid var(--color-alabaster);">
+        <div class="flex flex-col">
+          {formattedOriginalPrice && (
+            <span class="text-xs line-through" style="color: var(--color-warm-taupe);">{formattedOriginalPrice}</span>
+          )}
+          <div class="flex items-baseline gap-2">
+            <span class="text-2xl font-bold" style="color: var(--color-forest-green);">{formattedCurrentPrice}</span>
+            {savingsPercentage && (
+              <span class="text-xs font-semibold px-2 py-0.5 rounded-full" style="background-color: var(--color-champagne); color: var(--color-forest-green);">Save {savingsPercentage}%</span>
+            )}
+          </div>
+        </div>
+        <a
+          href={link}
+          target="_blank"
+          rel="noopener noreferrer sponsored"
+          class="inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold text-white shadow-md transition-all active:scale-95"
+          style="background-color: var(--color-forest-green);"
+        >
+          <span>Check Price</span>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+          </svg>
+        </a>
+      </div>
+    </div>
+  </div>
+</article>

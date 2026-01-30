@@ -1,0 +1,146 @@
+---
+interface Props {
+  currentPage: number;
+  totalPages: number;
+  basePath: string;
+}
+
+const { currentPage, totalPages, basePath } = Astro.props;
+
+// Don't render if only one page
+if (totalPages <= 1) {
+  return null;
+}
+
+const normalizedBasePath = basePath.endsWith('/') ? basePath.slice(0, -1) : basePath;
+
+// Generate page numbers to display (current ±2 with ellipsis)
+const generatePageNumbers = () => {
+  const pages: (number | 'ellipsis')[] = [];
+  
+  // Always show first page
+  pages.push(1);
+  
+  // Calculate range around current page
+  const startPage = Math.max(2, currentPage - 2);
+  const endPage = Math.min(totalPages - 1, currentPage + 2);
+  
+  // Add ellipsis after first page if needed
+  if (startPage > 2) {
+    pages.push('ellipsis');
+  }
+  
+  // Add pages in range
+  for (let i = startPage; i <= endPage; i++) {
+    pages.push(i);
+  }
+  
+  // Add ellipsis before last page if needed
+  if (endPage < totalPages - 1) {
+    pages.push('ellipsis');
+  }
+  
+  // Always show last page (if more than 1 page)
+  if (totalPages > 1) {
+    pages.push(totalPages);
+  }
+  
+  return pages;
+};
+
+const pageNumbers = generatePageNumbers();
+
+// Helper to build page URL
+const getPageUrl = (page: number) => {
+  return `${normalizedBasePath}/${page}/`;
+};
+
+const prevUrl = currentPage > 1 ? getPageUrl(currentPage - 1) : null;
+const nextUrl = currentPage < totalPages ? getPageUrl(currentPage + 1) : null;
+---
+
+<nav class="flex justify-center items-center gap-2 mt-12" aria-label="Pagination">
+  <!-- Previous Button -->
+  {prevUrl ? (
+    <a
+      href={prevUrl}
+      class="px-4 py-2 rounded-lg bg-white font-medium transition-colors"
+      style="border: 1px solid var(--color-warm-taupe); color: var(--color-slate-grey);"
+      aria-label="Previous page"
+    >
+      ← Previous
+    </a>
+  ) : (
+    <span
+      class="px-4 py-2 rounded-lg cursor-not-allowed font-medium"
+      style="background-color: var(--color-alabaster); border: 1px solid var(--color-warm-taupe); color: var(--color-warm-taupe);"
+      aria-disabled="true"
+    >
+      ← Previous
+    </span>
+  )}
+  
+  <!-- Page Numbers -->
+  <div class="hidden sm:flex gap-2">
+    {pageNumbers.map((page) => {
+      if (page === 'ellipsis') {
+        return (
+          <span class="px-3 py-2" style="color: var(--color-warm-taupe);">
+            ...
+          </span>
+        );
+      }
+      
+      const isActive = page === currentPage;
+      const url = getPageUrl(page);
+      
+      if (isActive) {
+        return (
+          <span
+            class="px-4 py-2 rounded-lg text-white font-semibold"
+            style="background-color: var(--color-forest-green);"
+            aria-current="page"
+          >
+            {page}
+          </span>
+        );
+      }
+      
+      return (
+        <a
+          href={url}
+          class="px-4 py-2 rounded-lg bg-white transition-colors font-medium"
+          style="border: 1px solid var(--color-warm-taupe); color: var(--color-slate-grey);"
+          aria-label={`Go to page ${page}`}
+        >
+          {page}
+        </a>
+      );
+    })}
+  </div>
+  
+  <!-- Mobile page indicator -->
+  <div class="sm:hidden px-4 py-2 rounded-lg font-medium" style="background-color: var(--color-alabaster); color: var(--color-slate-grey);">
+    Page {currentPage} of {totalPages}
+  </div>
+  
+  <!-- Next Button -->
+  {nextUrl ? (
+    <a
+      href={nextUrl}
+      class="px-4 py-2 rounded-lg bg-white transition-colors font-medium"
+      style="border: 1px solid var(--color-warm-taupe); color: var(--color-slate-grey);"
+      aria-label="Next page"
+    >
+      Next →
+    </a>
+  ) : (
+    <span
+      class="px-4 py-2 rounded-lg cursor-not-allowed font-medium"
+      style="background-color: var(--color-alabaster); border: 1px solid var(--color-warm-taupe); color: var(--color-warm-taupe);"
+      aria-disabled="true"
+    >
+      Next →
+    </span>
+  )}
+</nav>

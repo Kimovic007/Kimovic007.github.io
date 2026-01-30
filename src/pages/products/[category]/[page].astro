@@ -1,0 +1,62 @@
+---
+import { productCategories } from '../../../data/products';
+import ProductCategoryLayout from '../../../layouts/ProductCategoryLayout.astro';
+import type { GetStaticPaths, Page } from 'astro';
+import type { FeaturedProduct } from '../../../data/home';
+
+export const getStaticPaths = (() => {
+  // Filter out categories with no products
+  const visibleCategories = productCategories.filter(cat => cat.products.length > 0);
+  
+  const pageSize = 10;
+  const allRoutes = visibleCategories.flatMap((category) => {
+    const products = category.products;
+    const totalPages = Math.ceil(products.length / pageSize);
+    
+    // Create routes for each page
+    const routes = [];
+    for (let i = 1; i <= totalPages; i++) {
+      const start = (i - 1) * pageSize;
+      const end = start + pageSize;
+      const pageProducts = products.slice(start, end);
+      
+      // Create page object manually
+      const page: Page<FeaturedProduct> = {
+        data: pageProducts,
+        start,
+        end: Math.min(end, products.length),
+        size: pageSize,
+        total: products.length,
+        currentPage: i,
+        lastPage: totalPages,
+        url: {
+          current: `/products/${category.id}/${i}`,
+          prev: i > 1 ? `/products/${category.id}/${i - 1}` : undefined,
+          next: i < totalPages ? `/products/${category.id}/${i + 1}` : undefined,
+          first: `/products/${category.id}/1`,
+          last: `/products/${category.id}/${totalPages}`
+        }
+      };
+      
+      routes.push({
+        params: {
+          category: category.id,
+          page: String(i)
+        },
+        props: {
+          categoryData: category,
+          page
+        }
+      });
+    }
+    
+    return routes;
+  });
+  
+  return allRoutes;
+}) satisfies GetStaticPaths;
+
+const { page, categoryData } = Astro.props;
+---
+
+<ProductCategoryLayout category={categoryData} page={page} />

@@ -1,0 +1,176 @@
+---
+import SearchModal from './SearchModal.astro';
+
+const navigation = [
+  { name: 'Home', href: '/' },
+  { name: 'Dogs', href: '/collection/dogs' },
+  { name: 'Cats', href: '/collection/cats' },
+  { name: 'Reviews', href: '/collection/products-reviews' },
+  { name: 'Products', href: '/products' },
+  { name: 'About', href: '/about' },
+];
+
+const currentPath = Astro.url.pathname;
+const isActive = (href: string) => {
+  if (href === '/' && currentPath === '/') return true;
+  if (href !== '/' && currentPath.startsWith(href)) return true;
+  return false;
+};
+---
+
+<header class="bg-white shadow-sm sticky top-0 z-50">
+  <nav class="container-blog" aria-label="Main navigation">
+    <div class="flex items-center justify-between h-24">
+      <!-- Logo -->
+      <a href="/" class="flex items-center gap-3 group" transition:name="logo">
+        <img 
+          src="/AEVUM-PETS.png" 
+          alt="Aevum Pets Logo" 
+          class="h-24 w-auto group-hover:scale-105 transition-transform"
+        />
+      </a>
+
+      <!-- Desktop Navigation -->
+      <div class="hidden md:flex items-center gap-8">
+        {navigation.map(item => (
+          <a 
+            href={item.href}
+            class="font-medium transition-colors relative group"
+            style={isActive(item.href) ? 'color: var(--color-forest-green);' : 'color: var(--color-slate-grey);'}
+            transition:name={`nav-${item.name.toLowerCase()}`}
+          >
+            {item.name}
+            <span class={`absolute -bottom-1 left-0 h-0.5 transition-all ${
+              isActive(item.href) ? 'w-full' : 'w-0 group-hover:w-full'
+            }`} style="background-color: var(--color-champagne);"></span>
+          </a>
+        ))}
+      </div>
+
+      <!-- CTA Button & Mobile Menu -->
+      <div class="flex items-center gap-4">
+        <!-- Desktop Search Button -->
+        <button
+          type="button"
+          class="hidden md:flex p-2 rounded-lg transition-colors"
+          style="background-color: transparent;"
+          aria-label="Search"
+          id="search-button-desktop"
+        >
+          <svg class="w-5 h-5" style="color: var(--color-slate-grey);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+          </svg>
+        </button>
+
+        <a href="/subscribe" class="hidden sm:flex btn-primary text-sm" transition:name="cta-subscribe">
+          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+          </svg>
+          Subscribe
+        </a>
+
+        <!-- Mobile Menu Button -->
+        <button 
+          type="button" 
+          class="md:hidden p-2 rounded-lg transition-colors"
+          aria-label="Toggle menu"
+          id="mobile-menu-button"
+        >
+          <svg class="w-6 h-6" style="color: var(--color-slate-grey);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Mobile Navigation -->
+    <div id="mobile-menu" class="md:hidden hidden pb-6">
+      <div class="flex flex-col gap-2 pt-4" style="border-top: 1px solid var(--color-warm-taupe);">
+        <!-- Mobile Search Button -->
+        <button
+          type="button"
+          class="flex items-center gap-3 px-4 py-3 font-medium rounded-lg transition-colors"
+          style="color: var(--color-slate-grey);"
+          id="search-button-mobile"
+        >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+          </svg>
+          Search
+        </button>
+        
+        {navigation.map(item => (
+          <a 
+            href={item.href}
+            class="px-4 py-3 font-medium rounded-lg transition-colors"
+            style={isActive(item.href) 
+              ? 'color: var(--color-forest-green); background-color: var(--color-alabaster);' 
+              : 'color: var(--color-slate-grey);'}
+          >
+            {item.name}
+          </a>
+        ))}
+        <a href="/subscribe" class="btn-primary mt-4 text-center">
+          Subscribe to Newsletter
+        </a>
+      </div>
+    </div>
+  </nav>
+</header>
+
+<!-- Search Modal -->
+<SearchModal />
+
+<script>
+  function setupMobileMenu() {
+    const mobileMenuButton = document.getElementById('mobile-menu-button');
+    if (!mobileMenuButton || !mobileMenuButton.parentNode) return;
+
+    // Remove previous listeners by cloning
+    const newButton = mobileMenuButton.cloneNode(true);
+    mobileMenuButton.parentNode.replaceChild(newButton, mobileMenuButton);
+
+    newButton.addEventListener('click', () => {
+      const mobileMenu = document.getElementById('mobile-menu');
+      mobileMenu?.classList.toggle('hidden');
+    });
+  }
+
+  function setupSearchButtons() {
+    const desktopBtn = document.getElementById('search-button-desktop');
+    const mobileBtn = document.getElementById('search-button-mobile');
+    const mobileMenu = document.getElementById('mobile-menu');
+
+    const openSearch = () => {
+      if (typeof (window as any).__openSearchModal === 'function') {
+        // Close mobile menu if open
+        mobileMenu?.classList.add('hidden');
+        (window as any).__openSearchModal();
+      }
+    };
+
+    // Desktop button
+    if (desktopBtn && desktopBtn.parentNode) {
+      const newDesktopBtn = desktopBtn.cloneNode(true);
+      desktopBtn.parentNode.replaceChild(newDesktopBtn, desktopBtn);
+      newDesktopBtn.addEventListener('click', openSearch);
+    }
+
+    // Mobile button
+    if (mobileBtn && mobileBtn.parentNode) {
+      const newMobileBtn = mobileBtn.cloneNode(true);
+      mobileBtn.parentNode.replaceChild(newMobileBtn, mobileBtn);
+      newMobileBtn.addEventListener('click', openSearch);
+    }
+  }
+
+  // Run on initial load
+  setupMobileMenu();
+  setupSearchButtons();
+
+  // Re-run after View Transitions navigation
+  document.addEventListener('astro:page-load', () => {
+    setupMobileMenu();
+    setupSearchButtons();
+  });
+</script>

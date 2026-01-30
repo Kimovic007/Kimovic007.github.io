@@ -1,0 +1,77 @@
+---
+import { getCollection } from 'astro:content';
+import ArticleCard from './ArticleCard.astro';
+
+interface Props {
+  tags: string[];
+  collection: 'dogs' | 'cats' | 'products-reviews';
+  currentSlug: string;
+}
+
+const { tags, collection, currentSlug } = Astro.props;
+
+// Get all posts from all collections
+const dogsPosts = await getCollection('dogs');
+const catsPosts = await getCollection('cats');
+const productsPosts = await getCollection('products-reviews');
+
+// Map posts with their collection info
+const allPosts = [
+  ...dogsPosts.map(post => ({ ...post, postCollection: 'dogs' as const })),
+  ...catsPosts.map(post => ({ ...post, postCollection: 'cats' as const })),
+  ...productsPosts.map(post => ({ ...post, postCollection: 'products-reviews' as const })),
+];
+
+// Normalize current tags for comparison
+const normalizedCurrentTags = tags.map(t => t.toLowerCase());
+
+// Score and filter related posts
+const scoredPosts = allPosts
+  .filter(post => `/blog/${post.slug}` !== currentSlug)
+  .map(post => {
+    // Count shared tags (+2 per shared tag)
+    const postTags = post.data.tags.map(t => t.toLowerCase());
+    const sharedTagCount = postTags.filter(t => normalizedCurrentTags.includes(t)).length;
+    const tagScore = sharedTagCount * 2;
+    
+    // Same collection bonus (+3)
+    const collectionScore = post.postCollection === collection ? 3 : 0;
+    
+    // Combined score
+    const score = tagScore + collectionScore;
+    
+    return { post, score };
+  })
+  .filter(({ score }) => score > 0) // Only posts with some relevance
+  .sort((a, b) => {
+    // Sort by score descending, then by date descending
+    if (b.score !== a.score) return b.score - a.score;
+    return new Date(b.post.data.pubDate).getTime() - new Date(a.post.data.pubDate).getTime();
+  })
+  .slice(0, 3);
+
+const relatedPosts = scoredPosts.map(({ post }) => post);
+---
+
+{relatedPosts.length > 0 && (
+  <section class="section-padding" style="background-color: var(--color-alabaster);">
+    <div class="container-blog">
+      <h2 class="text-3xl font-heading font-bold mb-8 text-center" style="color: var(--color-forest-green);">
+        Related Articles
+      </h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        {relatedPosts.map(post => (
+          <ArticleCard
+            title={post.data.title}
+            description={post.data.description}
+            image={post.data.heroImage}
+            tags={post.data.tags}
+            href={`/blog/${post.slug}`}
+            date={post.data.pubDate.toString()}
+            readingTime={post.data.readingTime}
+          />
+        ))}
+      </div>
+    </div>
+  </section>
+)}

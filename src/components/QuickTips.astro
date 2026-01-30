@@ -1,0 +1,28 @@
+---
+import type { QuickTip } from '../data/home';
+const { items } = Astro.props as { items: QuickTip[] };
+---
+<section class="section-padding" style="background: linear-gradient(135deg, var(--color-alabaster) 0%, rgba(168, 159, 145, 0.1) 100%);">
+  <div class="container-blog">
+    <div class="text-center mb-12">
+      <span class="font-semibold text-sm uppercase tracking-wide" style="color: var(--color-champagne);">Quick Tips</span>
+      <h2 class="text-3xl md:text-4xl font-heading font-bold mt-2" style="color: var(--color-forest-green);">
+        Pet Care Essentials
+      </h2>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      {items.map(tip => (
+        <div class="bg-white p-6 rounded-2xl shadow-lg">
+          <div class={`w-12 h-12 ${tip.iconBgClass} rounded-xl flex items-center justify-center mb-4`}>
+            <svg class={`w-6 h-6 ${tip.iconColorClass}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d={tip.iconPath} />
+            </svg>
+          </div>
+          <h3 class="font-semibold mb-2" style="color: var(--color-forest-green);">{tip.title}</h3>
+          <p class="text-sm" style="color: var(--color-slate-grey);">{tip.description}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>

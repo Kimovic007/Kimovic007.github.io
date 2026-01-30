@@ -1,0 +1,28 @@
+---
+import { getCollection } from 'astro:content';
+import BlogPostLayout from '../../layouts/BlogPostLayout.astro';
+
+export async function getStaticPaths() {
+  const dogsPosts = await getCollection('dogs');
+  const catsPosts = await getCollection('cats');
+  const productsPosts = await getCollection('products-reviews');
+  
+  const allPosts = [
+    ...dogsPosts.map(post => ({ post, collection: 'dogs' })),
+    ...catsPosts.map(post => ({ post, collection: 'cats' })),
+    ...productsPosts.map(post => ({ post, collection: 'products-reviews' })),
+  ];
+  
+  return allPosts.map(({ post, collection }) => ({
+    params: { slug: post.slug },
+    props: { post, collection },
+  }));
+}
+
+const { post, collection } = Astro.props;
+const { Content, headings } = await post.render();
+---
+
+<BlogPostLayout frontmatter={post.data} headings={headings} collection={collection as 'dogs' | 'cats' | 'products-reviews'}>
+  <Content />
+</BlogPostLayout>

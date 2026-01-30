@@ -1,0 +1,33 @@
+---
+import ProductCard from './ProductCard.astro';
+import type { FeaturedProduct } from '../data/home';
+const { products } = Astro.props as { products: FeaturedProduct[] };
+---
+<section class="section-padding bg-white">
+  <div class="container-blog">
+    <div class="text-center mb-12">
+      <span class="font-semibold text-sm uppercase tracking-wide" style="color: var(--color-champagne);">Top Picks</span>
+      <h2 class="text-3xl md:text-4xl font-heading font-bold mt-2 mb-4" style="color: var(--color-forest-green);">
+        Products We Recommend
+      </h2>
+      <p class="max-w-2xl mx-auto" style="color: var(--color-slate-grey);">
+        Hand-picked products tested and reviewed by our team of pet care experts.
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+      {products.map(product => (
+        <ProductCard {...product} category="Top Picks" />
+      ))}
+    </div>
+
+    <div class="text-center mt-12">
+      <a href="/products" class="btn-primary">
+        View All Product Reviews
+        <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+        </svg>
+      </a>
+    </div>
+  </div>
+</section>

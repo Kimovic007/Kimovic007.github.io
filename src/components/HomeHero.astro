@@ -1,0 +1,38 @@
+---
+---
+<section class="relative overflow-hidden" style="background-color: var(--color-forest-green);" transition:name="hero">
+  <div class="absolute inset-0 opacity-10">
+    <svg class="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+      <pattern id="paws" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
+        <circle cx="10" cy="10" r="3" fill="currentColor" />
+      </pattern>
+      <rect width="100" height="100" fill="url(#paws)" />
+    </svg>
+  </div>
+
+  <div class="container-blog relative z-10 py-20 md:py-32">
+    <div class="max-w-3xl">
+      <span class="inline-block px-4 py-2 text-white rounded-full text-sm font-medium mb-6 backdrop-blur-sm" style="background-color: rgba(255,255,255,0.15);" transition:name="hero-badge">
+        🐾 Trusted by 50,000+ Pet Parents
+      </span>
+      <h1 class="text-4xl md:text-5xl lg:text-6xl font-heading font-bold text-white mb-6 leading-tight" transition:name="hero-title">
+        Expert Pet Care Advice for 
+        <span style="color: var(--color-champagne);">Happy, Healthy</span> Furry Friends
+      </h1>
+      <p class="text-xl mb-8 max-w-2xl" style="color: var(--color-alabaster); opacity: 0.9;" transition:name="hero-description">
+        Discover vet-approved tips, honest product reviews, and comprehensive guides to give your pets the best life possible.
+      </p>
+      <div class="flex flex-col sm:flex-row gap-4">
+        <a href="/blog" class="btn-affiliate" transition:name="hero-cta-articles">
+          Explore Articles
+          <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+          </svg>
+        </a>
+        <a href="/products" class="inline-flex items-center justify-center px-8 py-4 text-white font-semibold rounded-lg transition-all backdrop-blur-sm border border-white/30" style="background-color: rgba(255,255,255,0.1);" transition:name="hero-cta-products">
+          Browse Products
+        </a>
+      </div>
+    </div>
+  </div>
+</section>

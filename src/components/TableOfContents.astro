@@ -1,0 +1,37 @@
+---
+interface Props {
+  headings: { depth: number; slug: string; text: string }[];
+}
+
+const { headings } = Astro.props;
+
+// Filter to only h2 and h3 headings
+const tocHeadings = headings.filter(h => h.depth >= 2 && h.depth <= 3);
+---
+
+{tocHeadings.length > 0 && (
+  <nav class="rounded-2xl p-6" style="background-color: var(--color-alabaster); border: 1px solid var(--color-warm-taupe);">
+    <h2 class="font-semibold mb-4 flex items-center gap-2" style="color: var(--color-forest-green);">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: var(--color-champagne);">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/>
+      </svg>
+      Table of Contents
+    </h2>
+    <ol class="space-y-2">
+      {tocHeadings.map((heading, index) => (
+        <li class:list={[heading.depth === 3 && "ml-4"]}>
+          <a 
+            href={`#${heading.slug}`}
+            class="text-sm transition-colors flex items-start gap-2 group"
+            style="color: var(--color-slate-grey);"
+          >
+            <span class="shrink-0" style="color: var(--color-warm-taupe);">
+              {heading.depth === 2 ? `${index + 1}.` : '•'}
+            </span>
+            <span class="line-clamp-2">{heading.text}</span>
+          </a>
+        </li>
+      ))}
+    </ol>
+  </nav>
+)}

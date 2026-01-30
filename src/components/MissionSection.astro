@@ -1,0 +1,28 @@
+---
+import type { MissionHighlight } from '../data/about';
+const { highlights } = Astro.props as { highlights: MissionHighlight[] };
+---
+<section class="section-padding bg-white">
+  <div class="container-blog">
+    <div class="max-w-4xl mx-auto text-center">
+      <h2 class="text-3xl font-heading font-bold mb-6" style="color: var(--color-forest-green);">Our Mission</h2>
+      <p class="text-xl mb-8" style="color: var(--color-slate-grey);">
+        To provide pet parents with accurate, actionable, and caring advice that helps their pets live happier, healthier lives. We believe every pet deserves the best care, and every owner deserves trusted guidance.
+      </p>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12">
+        {highlights.map(item => (
+          <div class="text-center">
+            <div class={`w-16 h-16 ${item.iconBgClass} rounded-2xl flex items-center justify-center mx-auto mb-4`}>
+              <svg class={`w-8 h-8 ${item.iconColorClass}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d={item.iconPath} />
+              </svg>
+            </div>
+            <h3 class="font-semibold mb-2" style="color: var(--color-forest-green);">{item.title}</h3>
+            <p class="text-sm" style="color: var(--color-slate-grey);">{item.description}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>

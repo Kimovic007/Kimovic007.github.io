@@ -1,0 +1,158 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import { Image } from 'astro:assets';
+import PostHeader from '../components/PostHeader.astro';
+import TableOfContents from '../components/TableOfContents.astro';
+import AuthorCard from '../components/AuthorCard.astro';
+import RelatedPosts from '../components/RelatedPosts.astro';
+import AffiliateBox from '../components/AffiliateBox.astro';
+import NewsletterCTA from '../components/NewsletterCTA.astro';
+import { productCategories } from '../data/products';
+
+interface Props {
+  frontmatter: {
+    title: string;
+    description: string;
+    pubDate: string;
+    updatedDate?: string;
+    heroImage: string;
+    heroImageAlt: string;
+    author: string;
+    authorImage: string;
+    authorBio: string;
+    tags: string[];
+    readingTime: string;
+    affiliateProduct?: {
+      name: string;
+      image: string;
+      price: string;
+      rating: number;
+      link: string;
+      description: string;
+    };
+    affiliateProductId?: string;
+  };
+  headings: { depth: number; slug: string; text: string }[];
+  collection: 'dogs' | 'cats' | 'products-reviews';
+}
+
+const { frontmatter, headings, collection } = Astro.props;
+
+// Fetch product by ID if affiliateProductId is provided
+let affiliateProduct = frontmatter.affiliateProduct;
+if (frontmatter.affiliateProductId && !affiliateProduct) {
+  affiliateProduct = productCategories
+    .flatMap(cat => cat.products)
+    .find(p => p.id === frontmatter.affiliateProductId);
+}
+
+// JSON-LD structured data for blog post
+const articleSchema = {
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": frontmatter.title,
+  "description": frontmatter.description,
+  "image": frontmatter.heroImage,
+  "datePublished": frontmatter.pubDate,
+  "dateModified": frontmatter.updatedDate || frontmatter.pubDate,
+  "author": {
+    "@type": "Person",
+    "name": frontmatter.author
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Pet Care Blog",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "/logo.png"
+    }
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": Astro.url.href
+  }
+};
+---
+
+<BaseLayout 
+  title={`${frontmatter.title} | Pet Care Blog`}
+  description={frontmatter.description}
+  image={frontmatter.heroImage}
+  type="article"
+  publishedTime={frontmatter.pubDate}
+  author={frontmatter.author}
+>
+  <script type="application/ld+json" set:html={JSON.stringify(articleSchema)} />
+  
+  <article class="container-blog py-8">
+    <PostHeader 
+      title={frontmatter.title}
+      description={frontmatter.description}
+      tags={frontmatter.tags}
+      collection={collection}
+      readingTime={frontmatter.readingTime}
+      author={frontmatter.author}
+      authorImage={frontmatter.authorImage}
+      pubDate={frontmatter.pubDate}
+      updatedDate={frontmatter.updatedDate}
+    />
+
+    <!-- Hero Image -->
+    <div class="mb-12 rounded-2xl overflow-hidden shadow-xl">
+      <img 
+        src={frontmatter.heroImage} 
+        alt={frontmatter.heroImageAlt}
+        class="w-full h-[400px] md:h-[500px] object-cover"
+        loading="eager"
+      />
+    </div>
+
+    <div class="flex flex-col lg:flex-row gap-8 xl:gap-12">
+      <!-- Main Content (Left Column - Wider) -->
+      <div class="flex-grow lg:w-0 min-w-0 order-2 lg:order-1">
+        <div class="prose-blog">
+          <slot />
+        </div>
+        
+        <!-- Tags -->
+        <div class="mt-12 pt-8" style="border-top: 1px solid var(--color-warm-taupe);">
+          <div class="flex flex-wrap gap-2">
+            {frontmatter.tags.map(tag => (
+              <a 
+                href={`/tag/${tag.toLowerCase()}`}
+                class="px-4 py-2 rounded-full text-sm transition-colors"
+                style="background-color: var(--color-alabaster); color: var(--color-slate-grey);"
+              >
+                #{tag}
+              </a>
+            ))}
+          </div>
+        </div>
+
+        <!-- Author Card -->
+        <AuthorCard 
+          name={frontmatter.author}
+          image={frontmatter.authorImage}
+          bio={frontmatter.authorBio}
+        />
+
+        <!-- Newsletter CTA -->
+        <NewsletterCTA />
+      </div>
+
+      <!-- Right Sidebar (Affiliate Box + TOC) -->
+      <aside class="lg:w-80 xl:w-96 shrink-0 order-1 lg:order-2">
+        <div class="lg:sticky lg:top-20 space-y-6">
+          {affiliateProduct && (
+            <AffiliateBox product={affiliateProduct} />
+          )}
+          
+          <TableOfContents headings={headings} />
+        </div>
+      </aside>
+    </div>
+  </article>
+
+  <!-- Related Posts -->
+  <RelatedPosts tags={frontmatter.tags} collection={collection} currentSlug={Astro.url.pathname} />
+</BaseLayout>

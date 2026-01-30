@@ -1,0 +1,197 @@
+---
+import type { ProductCategory } from '../data/products';
+
+interface Props {
+  categories: ProductCategory[];
+}
+
+const { categories } = Astro.props;
+
+// Filter out categories with no products
+const visibleCategories = categories.filter(cat => cat.products.length > 0);
+---
+
+<!-- Mobile: Floating Quick Nav Button -->
+<button
+  id="quick-nav-button"
+  class="fixed bottom-6 right-6 z-30 lg:hidden px-4 py-3 rounded-full shadow-lg transition-all flex items-center gap-2"
+  style="background-color: var(--color-forest-green); color: var(--color-alabaster);"
+  aria-label="Open quick navigation"
+>
+  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+  </svg>
+  <span class="font-medium">Quick Nav</span>
+</button>
+
+<!-- Mobile: Bottom Sheet Drawer Overlay -->
+<div
+  id="drawer-overlay"
+  class="fixed inset-0 bg-black/50 z-40 lg:hidden hidden"
+  aria-hidden="true"
+></div>
+
+<!-- Mobile: Bottom Sheet Drawer -->
+<div
+  id="drawer-panel"
+  class="fixed bottom-0 left-0 right-0 bg-white rounded-t-3xl z-50 lg:hidden transform translate-y-full transition-transform duration-300 ease-out"
+  role="dialog"
+  aria-labelledby="drawer-title"
+>
+  <div class="p-6">
+    <!-- Drawer Header -->
+    <div class="flex items-center justify-between mb-6">
+      <h2 id="drawer-title" class="text-xl font-bold" style="color: var(--color-forest-green);">
+        Quick Navigation
+      </h2>
+      <button
+        id="drawer-close"
+        class="p-2 rounded-lg transition-colors"
+        style="color: var(--color-slate-grey);"
+        aria-label="Close navigation"
+      >
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+    
+    <!-- Category Links -->
+    <nav class="space-y-2 max-h-[60vh] overflow-y-auto">
+      {visibleCategories.map((category) => (
+        <a
+          href={`#section-${category.id}`}
+          class="drawer-link flex items-center gap-3 p-3 rounded-lg transition-colors"
+          style="color: var(--color-forest-green);"
+          data-section={category.id}
+        >
+          <span class="text-2xl">{category.icon}</span>
+          <span class="font-medium" style="color: var(--color-forest-green);">{category.title}</span>
+        </a>
+      ))}
+    </nav>
+  </div>
+</div>
+
+<!-- Desktop: Sticky Sidebar TOC -->
+<div class="hidden lg:block lg:sticky lg:top-24">
+  <div class="rounded-2xl p-6" style="background-color: var(--color-alabaster); border: 1px solid var(--color-warm-taupe);">
+    <h2 class="text-xs font-bold uppercase tracking-wider mb-4 px-2" style="color: var(--color-warm-taupe);">
+      Categories
+    </h2>
+    <nav class="space-y-2">
+      {visibleCategories.map((category) => (
+        <a
+          href={`#section-${category.id}`}
+          class="toc-link group flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200"
+          style="color: var(--color-slate-grey);"
+          data-section={category.id}
+        >
+          <span class="text-xl group-hover:scale-110 transition-transform duration-200">{category.icon}</span>
+          <span class="font-medium text-base">{category.title}</span>
+        </a>
+      ))}
+    </nav>
+  </div>
+</div>
+
+<script>
+  // Global observer reference to prevent memory leaks
+  let sectionObserver: IntersectionObserver | null = null;
+
+  function setupQuickNav() {
+    // Disconnect existing observer if it exists
+    if (sectionObserver) {
+      sectionObserver.disconnect();
+      sectionObserver = null;
+    }
+
+    // Get key container elements once (minimize DOM queries)
+    const drawer = document.getElementById('drawer-panel');
+    const drawerOverlay = document.getElementById('drawer-overlay');
+    const quickNavButton = document.getElementById('quick-nav-button');
+    const drawerClose = document.getElementById('drawer-close');
+    const drawerLinksContainer = drawer?.querySelector('nav');
+
+    if (!drawer || !drawerOverlay || !drawerLinksContainer || !quickNavButton || !drawerClose) return;
+
+    // Drawer control functions
+    const openDrawer = () => {
+      drawerOverlay.classList.remove('hidden');
+      drawer.classList.remove('translate-y-full');
+      document.body.style.overflow = 'hidden';
+    };
+
+    const closeDrawer = () => {
+      drawer.classList.add('translate-y-full');
+      setTimeout(() => {
+        drawerOverlay.classList.add('hidden');
+        document.body.style.overflow = '';
+      }, 300);
+    };
+
+    const updateActiveLink = (sectionId: string) => {
+      document.querySelectorAll('.toc-link, .drawer-link').forEach(link => {
+        link.classList.remove('bg-white', 'shadow-sm', 'text-primary');
+      });
+      
+      document.querySelectorAll(`[data-section="${sectionId}"]`).forEach(link => {
+        link.classList.add('bg-white', 'shadow-sm', 'text-primary');
+      });
+    };
+
+    // Clone and replace interactive buttons to clear old listeners
+    if (quickNavButton.parentNode) {
+      const newButton = quickNavButton.cloneNode(true);
+      quickNavButton.parentNode.replaceChild(newButton, quickNavButton);
+      (newButton as HTMLElement).addEventListener('click', openDrawer);
+    }
+
+    if (drawerClose.parentNode) {
+      const newClose = drawerClose.cloneNode(true);
+      drawerClose.parentNode.replaceChild(newClose, drawerClose);
+      (newClose as HTMLElement).addEventListener('click', closeDrawer);
+    }
+
+    if (drawerOverlay.parentNode) {
+      const newOverlay = drawerOverlay.cloneNode(true);
+      drawerOverlay.parentNode.replaceChild(newOverlay, drawerOverlay);
+      (newOverlay as HTMLElement).addEventListener('click', closeDrawer);
+    }
+
+    // Use event delegation for drawer links (more efficient than cloning each one)
+    const newDrawerContainer = drawerLinksContainer.cloneNode(true);
+    drawerLinksContainer.parentNode?.replaceChild(newDrawerContainer, drawerLinksContainer);
+    (newDrawerContainer as HTMLElement).addEventListener('click', (e: Event) => {
+      const target = e.target as HTMLElement;
+      if (target?.closest('.drawer-link')) {
+        closeDrawer();
+      }
+    });
+
+    // Setup IntersectionObserver for active section highlighting
+    const sections = document.querySelectorAll('[id^="section-"]');
+    if (sections.length === 0) return;
+
+    sectionObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const sectionId = entry.target.id.replace('section-', '');
+          updateActiveLink(sectionId);
+        }
+      });
+    }, {
+      root: null,
+      rootMargin: '-100px 0px -66%',
+      threshold: 0
+    });
+
+    sections.forEach(section => sectionObserver!.observe(section));
+  }
+
+  // Run on initial load
+  setupQuickNav();
+
+  // Re-run after View Transitions navigation
+  document.addEventListener('astro:page-load', setupQuickNav);
+</script>

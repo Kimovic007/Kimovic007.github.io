@@ -1,0 +1,29 @@
+---
+import ArticleCard from './ArticleCard.astro';
+import type { CollectionEntry } from 'astro:content';
+
+type AnyPost = CollectionEntry<'dogs'> | CollectionEntry<'cats'> | CollectionEntry<'products-reviews'>;
+
+const { posts, featuredIndex = 0 } = Astro.props as {
+  posts: AnyPost[];
+  featuredIndex?: number;
+};
+---
+<section class="section-padding" style="background-color: var(--color-alabaster);">
+  <div class="container-blog">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      {posts.map((post, index) => (
+        <ArticleCard
+          title={post.data.title}
+          description={post.data.description}
+          image={post.data.heroImage}
+          tags={post.data.tags}
+          href={`/blog/${post.slug}`}
+          date={post.data.pubDate.toString()}
+          readingTime={post.data.readingTime}
+          featured={index === featuredIndex}
+        />
+      ))}
+    </div>
+  </div>
+</section>
