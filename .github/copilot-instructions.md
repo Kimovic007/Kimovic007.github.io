@@ -70,6 +70,12 @@ readingTime: "12 min read"
 - `npm run build` - production build (validates schemas)
 - `npx astro sync` - after schema changes
 
+## GitHub Pages Deployment (GitHub Actions)
+- **Workflow file**: [.github/workflows/deploy.yml](.github/workflows/deploy.yml)
+- **Pages source**: Settings → Pages → Source = **GitHub Actions**
+- **Custom domain**: set `site` to `https://www.symbiopets.me` and keep `base: '/'` in [astro.config.mjs](astro.config.mjs)
+- **Deploys** on push to `main` and publishes `dist/`
+
 ## Critical Patterns
 1. **Components receive data via props** - no internal `getCollection()` calls
 2. **Product reviews** go in `products-reviews/` collection with `affiliateProductId`

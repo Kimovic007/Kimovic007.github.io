@@ -152,7 +152,48 @@ export const catFoodCategory: ProductCategory = {
       features: ['High-Protein', 'Alaskan Pollock', '20 Superfoods'],
       featured: false,
       published: true
+    },
+    {
+      "id": "54781",
+      "name": "Hill's Prescription Diet c/d Multicare Urinary Care Chicken & Vegetable Stew Wet Dog Food",
+      "image": "https://img.chewy.com/is/image/catalog/54781_MAIN._AC_SL600_V1661364909_.jpg",
+      "price": "$54.99",
+      "originalPrice": "",
+      "rating": 4.7,
+      "reviewCount": 450,
+      "link": "https://www.chewy.com/hills-prescription-diet-cd-multicare/dp/54781",
+      "description": "A veterinary‑approved urinary care stew that helps reduce calcium oxalate and struvite stone formation in dogs.",
+      "badge": "Veterinary Diet",
+      "features": [
+        "Supports urinary health",
+        "Clinically tested nutrition",
+        "Moisture-rich stew formula",
+        "Balanced minerals to reduce stone risk"
+      ],
+      "featured": false,
+      "published": true
+    },
+    {
+      "id": "35159",
+      "name": "Royal Canin Veterinary Diet Adult Urinary SO Loaf in Sauce Wet Dog Food",
+      "image": "https://img.chewy.com/is/image/catalog/35159_MAIN._AC_SL600_V1661364909_.jpg",
+      "price": "$59.99",
+      "originalPrice": "",
+      "rating": 4.6,
+      "reviewCount": 620,
+      "link": "https://www.chewy.com/royal-canin-veterinary-diet-adult/dp/35159",
+      "description": "A veterinary diet formulated to dissolve struvite stones and prevent urinary crystal recurrence.",
+      "badge": "Veterinary Diet",
+      "features": [
+        "Clinically proven to dissolve struvite stones",
+        "Veterinary-exclusive S/O Index formula",
+        "Strict mineral control",
+        "Pâté loaf texture for easy feeding"
+      ],
+      "featured": false,
+      "published": true
     }
+
   ],
   alternate: true
 };
