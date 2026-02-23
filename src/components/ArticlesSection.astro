@@ -8,25 +8,20 @@ const { featured, posts } = Astro.props as {
   featured?: AnyPost;
   posts: AnyPost[];
 };
+
+const displayPosts = posts.slice(0, 3);
 ---
-<section class="section-padding" style="background-color: var(--color-alabaster);">
+<section class="section-padding" style="background: linear-gradient(180deg, rgba(20,45,41,0.92), rgba(27,59,54,0.94));">
   <div class="container-blog">
-    <div class="flex flex-col md:flex-row md:items-end md:justify-between mb-12">
+    <div class="flex flex-col md:flex-row md:items-end md:justify-between mb-12 gap-4">
       <div>
-        <span class="font-semibold text-sm uppercase tracking-wide" style="color: var(--color-champagne);">Latest Articles</span>
-        <h2 class="text-3xl md:text-4xl font-heading font-bold mt-2" style="color: var(--color-forest-green);">
-          Fresh Pet Care Insights
-        </h2>
+        <span class="pill-badge">Fresh Insights</span>
+        <h2 class="text-3xl md:text-4xl font-heading font-bold text-white mt-3">Latest guidance from our vets</h2>
       </div>
-      <a href="/blog" class="font-semibold flex items-center gap-2 hover:gap-3 transition-all mt-4 md:mt-0" style="color: var(--color-forest-green);">
-        View All Articles
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-        </svg>
-      </a>
+      <a href="/blog" class="btn-secondary text-sm px-5 py-2">View All Articles</a>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+    <div class="grid gap-6 lg:grid-cols-[1.2fr_1fr]">
       {featured && (
         <ArticleCard
           title={featured.data.title}
@@ -39,17 +34,20 @@ const { featured, posts } = Astro.props as {
           featured={true}
         />
       )}
-      {posts.map(post => (
-        <ArticleCard
-          title={post.data.title}
-          description={post.data.description}
-          image={post.data.heroImage}
-          tags={post.data.tags}
-          href={`/blog/${post.slug}`}
-          date={post.data.pubDate.toString()}
-          readingTime={post.data.readingTime}
-        />
-      ))}
+
+      <div class="grid gap-6">
+        {displayPosts.map(post => (
+          <ArticleCard
+            title={post.data.title}
+            description={post.data.description}
+            image={post.data.heroImage}
+            tags={post.data.tags}
+            href={`/blog/${post.slug}`}
+            date={post.data.pubDate.toString()}
+            readingTime={post.data.readingTime}
+          />
+        ))}
+      </div>
     </div>
   </div>
 </section>

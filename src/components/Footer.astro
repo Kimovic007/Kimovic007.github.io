@@ -10,14 +10,15 @@ const footerLinks = {
   ],
   resources: [
     { name: 'Blog', href: '/blog' },
-    { name: 'Product Reviews', href: '/products' },
+    // DISABLED: Pure blog mode - Products page archived
+    // { name: 'Product Reviews', href: '/products' },
     { name: 'Newsletter', href: '/subscribe' },
   ],
   company: [
     { name: 'About Us', href: '/about' },
     { name: 'Contact', href: '/contact' },
     { name: 'Privacy Policy', href: '/privacy' },
-    { name: 'Affiliate Disclosure', href: '/disclosure' },
+    { name: 'Editorial Policy', href: '/disclosure' },
     { name: 'Terms of Service', href: '/terms' },
   ],
 };
@@ -30,7 +31,7 @@ const socialLinks = [
 ];
 ---
 
-<footer style="background-color: var(--color-forest-green); color: var(--color-alabaster);">
+<footer style="background: linear-gradient(180deg, rgba(20,45,41,0.96), rgba(27,59,54,0.94)); color: var(--color-alabaster);">
   <!-- Main Footer -->
   <div class="container-blog section-padding">
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12">
@@ -38,24 +39,24 @@ const socialLinks = [
       <div class="lg:col-span-2">
         <a href="/" class="flex items-center mb-6">
           <img 
-            src="/SymbioPetsTransparent.png" 
+            src="/favicon.png" 
             alt="SymbioPets Logo" 
             class="h-32 w-auto brightness-0 invert"
           />
         </a>
-        <p class="mb-6 max-w-md" style="color: var(--color-warm-taupe);">
-          Your trusted source for pet care advice, product reviews, and everything you need to keep your furry friends happy and healthy.
+        <p class="mb-6 max-w-md" style="color: rgba(242,240,235,0.75);">
+          Expert pet care insights, product guidance, and calm editorial advice for happier, healthier companions.
         </p>
         
         <!-- Social Links -->
-        <div class="flex gap-4">
+        <div class="flex gap-3">
           {socialLinks.map(social => (
             <a 
               href={social.href}
               target="_blank"
               rel="noopener noreferrer"
-              class="w-10 h-10 rounded-lg flex items-center justify-center transition-colors"
-              style="background-color: var(--color-forest-green-dark);"
+              class="w-10 h-10 rounded-full flex items-center justify-center transition-colors border border-white/10 hover:border-champagne"
+              style="background-color: rgba(255,255,255,0.05);"
               aria-label={social.name}
             >
               {social.icon === 'facebook' && (
@@ -81,7 +82,7 @@ const socialLinks = [
         <ul class="space-y-3">
           {footerLinks.categories.map(link => (
             <li>
-              <a href={link.href} class="hover:text-primary transition-colors">{link.name}</a>
+              <a href={link.href} class="footer-link">{link.name}</a>
             </li>
           ))}
         </ul>
@@ -93,7 +94,7 @@ const socialLinks = [
         <ul class="space-y-3">
           {footerLinks.resources.map(link => (
             <li>
-              <a href={link.href} class="hover:text-primary transition-colors">{link.name}</a>
+              <a href={link.href} class="footer-link">{link.name}</a>
             </li>
           ))}
         </ul>
@@ -105,7 +106,7 @@ const socialLinks = [
         <ul class="space-y-3">
           {footerLinks.company.map(link => (
             <li>
-              <a href={link.href} class="hover:text-primary transition-colors">{link.name}</a>
+              <a href={link.href} class="footer-link">{link.name}</a>
             </li>
           ))}
         </ul>
@@ -114,15 +115,17 @@ const socialLinks = [
   </div>
 
   <!-- Bottom Bar -->
-  <div style="border-top: 1px solid var(--color-forest-green-dark);">
+  <div style="border-top: 1px solid rgba(255,255,255,0.08);">
     <div class="container-blog py-6">
       <div class="flex flex-col md:flex-row justify-between items-center gap-4">
-        <p class="text-sm" style="color: var(--color-warm-taupe);">
-          © {currentYear} Pet Care Blog. All rights reserved.
+        <p class="text-sm" style="color: rgba(242,240,235,0.7);">
+          © {currentYear} Symbio Pets. All rights reserved.
         </p>
+        <!-- DISABLED: Pure blog mode - Affiliate disclosure removed
         <p class="text-xs text-center md:text-right max-w-md" style="color: var(--color-warm-taupe);">
           <strong>Affiliate Disclosure:</strong> Some links on this site are affiliate links. We may earn a commission if you make a purchase through these links, at no extra cost to you.
         </p>
+        -->
       </div>
     </div>
   </div>

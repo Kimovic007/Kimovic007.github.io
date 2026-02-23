@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "stitch": {
+      "command": "npx.cmd",
+      "args": ["@_davideast/stitch-mcp", "proxy"],
+      "env": {
+        "STITCH_PROJECT_ID": "4239871347209796648",
+        "GOOGLE_CLOUD_PROJECT": "lvl1up",
+        "CLOUDSDK_CONFIG": "C:\\Users\\Kimovic\\.stitch-mcp\\config"
+      }
+    }
+  }
+}

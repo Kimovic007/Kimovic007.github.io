@@ -1,0 +1,12 @@
+[Gcloud] Token fetch failed. Please run:
+
+  CLOUDSDK_CONFIG="C:\Users\Kimovic/.stitch-mcp/config" C:\Users\Kimovic\.stitch-mcp\google-cloud-sdk\bin\gcloud.cmd auth application-default login
+
+to obtain new credentials.
+Stitch Transport Error: StreamableHTTPError: Streamable HTTP error: Error POSTing to endpoint: {"id":1,"jsonrpc":"2.0","result":{"content":[{"text":"Request is missing required authentication credential. Expected OAuth 2 access token, login cookie or other valid authentication credential. See https://developers.google.com/identity/sign-in/web/devconsole-project.","type":"text"}],"isError":true}}
+    at StreamableHTTPClientTransport.send (file:///C:/Users/Kimovic/AppData/Local/npm-cache/_npx/829c6278c197c365/node_modules/@_davideast/stitch-mcp/dist/cli.js:20672:15)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5) {
+  code: 401
+}
+
+Γ£û Failed: Streamable HTTP error: Error POSTing to endpoint: {"id":1,"jsonrpc":"2.0","result":{"content":[{"text":"Request is missing required authentication credential. Expected OAuth 2 access token, login cookie or other valid authentication credential. See https://developers.google.com/identity/sign-in/web/devconsole-project.","type":"text"}],"isError":true}}

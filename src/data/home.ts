@@ -37,6 +37,21 @@ export type QuickTip = {
   iconBgClass: string;
 };
 
+export type Topic = {
+  name: TagCategory | 'All Topics';
+  slug: string;
+  icon: string;
+  description: string;
+  href: string;
+};
+
+export type Testimonial = {
+  name: string;
+  role: string;
+  quote: string;
+  avatar: string;
+};
+
 export const categoryMeta: CategoryMeta[] = [
   { name: 'Nutrition', slug: 'nutrition', icon: '🥗', color: 'from-forest-green to-forest-green-dark' },
   { name: 'Training', slug: 'training', icon: '🎓', color: 'from-forest-green to-forest-green-dark' },
@@ -46,17 +61,34 @@ export const categoryMeta: CategoryMeta[] = [
   { name: 'All Tags', slug: 'tags', icon: '🏷️', color: 'from-forest-green to-warm-taupe', href: '/tags' },
 ];
 
-/**
- * Dynamically generates the featured products list by filtering all products
- * from the product catalog where featured === true.
- * This ensures consistency between the products database and homepage display.
- */
-import { productCategories } from './products';
+export const topics: Topic[] = [
+  { name: 'Nutrition', slug: 'nutrition', icon: '🥗', description: 'Balanced diets and feeding guides', href: '/tag/nutrition' },
+  { name: 'Training', slug: 'training', icon: '🎓', description: 'Behavior shaping and essentials', href: '/tag/training' },
+  { name: 'Health', slug: 'health', icon: '❤️', description: 'Wellness, vet checks, and safety', href: '/tag/health' },
+  { name: 'Care', slug: 'care', icon: '🐾', description: 'Daily routines, grooming, and bonding', href: '/tag/care' },
+  { name: 'Lifestyle', slug: 'lifestyle', icon: '🏠', description: 'Travel, home setup, and play', href: '/tag/lifestyle' },
+  { name: 'All Topics', slug: 'tags', icon: '🏷️', description: 'Browse every topic and tag', href: '/tags' },
+];
 
+/**
+ * DISABLED: Pure blog mode
+ * Featured products are disabled while the site operates as a pure content blog.
+ * To restore, uncomment the productCategories import and original filtering logic.
+ */
+
+// ORIGINAL IMPORT - COMMENTED OUT FOR RESTORATION:
+// import { productCategories } from './products';
+
+// Empty array for pure blog mode - prevents import errors
+export const featuredProducts: FeaturedProduct[] = [];
+
+/*
+ORIGINAL CODE - COMMENTED OUT FOR RESTORATION:
 // Extract all featured products from all categories by flattening and filtering
 export const featuredProducts: FeaturedProduct[] = productCategories
   .flatMap(category => category.products)
   .filter((product): product is FeaturedProduct & { featured: true } => product.featured === true);
+*/
 
 export const quickTips: QuickTip[] = [
   {
@@ -86,5 +118,26 @@ export const quickTips: QuickTip[] = [
     iconPath: 'M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253',
     iconColorClass: 'text-champagne',
     iconBgClass: 'bg-forest-green'
+  }
+];
+
+export const testimonials: Testimonial[] = [
+  {
+    name: 'Sarah M.',
+    role: 'Dog Owner',
+    quote: 'Symbio Pets’ advice has truly transformed how we care for our dog. The expert reviews are invaluable.',
+    avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop'
+  },
+  {
+    name: 'James K.',
+    role: 'Puppy Parent',
+    quote: 'Finally, honest guides I can trust. Training became easier and our pup is thriving.',
+    avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop'
+  },
+  {
+    name: 'Emily R.',
+    role: 'Cat Lover',
+    quote: 'The nutrition breakdowns helped my cat get healthier. Clear, kind, and evidence-based.',
+    avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop'
   }
 ];

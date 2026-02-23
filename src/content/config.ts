@@ -14,6 +14,7 @@ const contentSchema = z.object({
   tags: z.array(z.string()),
   readingTime: z.string(),
   featured: z.boolean().default(false),
+  // DORMANT: Kept for existing frontmatter compatibility - affiliate system disabled
   affiliateProductId: z.string().optional(),
   published: z.boolean().default(true),
 });

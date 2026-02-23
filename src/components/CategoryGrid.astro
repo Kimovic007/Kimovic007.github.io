@@ -1,34 +1,31 @@
 ---
-import type { Category } from '../data/home';
-const { items } = Astro.props as { items: Category[] };
+import type { Topic } from '../data/home';
+import '../styles/category-grid.css';
+
+const { items } = Astro.props as { items: (Topic & { count?: number })[] };
 ---
-<section class="section-padding bg-white">
+<section class="section-padding topics-section">
   <div class="container-blog">
-    <div class="text-center mb-12">
-      <h2 class="text-3xl md:text-4xl font-heading font-bold mb-4" style="color: var(--color-forest-green);">
-        Explore Pet Care Topics
-      </h2>
-      <p class="max-w-2xl mx-auto" style="color: var(--color-slate-grey);">
-        From nutrition to training, find expert guidance on every aspect of pet care.
-      </p>
+    <div class="topics-header">
+      <h2 class="topics-title">Explore Pet Care Topics</h2>
+      <p class="topics-subtitle">Find expert advice across all areas of pet care</p>
     </div>
 
-    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-      {items.map(category => (
-        <a
-          href={category.href || `/tag/${category.slug}`}
-          class="group p-6 bg-white rounded-2xl border hover:shadow-xl transition-all text-center"
-          style="border-color: var(--color-warm-taupe);"
-        >
-          <div class={`w-16 h-16 bg-gradient-to-br ${category.color} rounded-2xl flex items-center justify-center mx-auto mb-4 text-3xl shadow-lg group-hover:scale-110 transition-transform`}>
-            {category.icon}
+    <div class="topics-grid">
+      {items.map(topic => (
+        <a href={topic.href} class="topic-card">
+          <div class="topic-icon">
+            <span class="icon-emoji">{topic.icon}</span>
           </div>
-          <h3 class="font-semibold mb-1 transition-colors" style="color: var(--color-forest-green);">
-            {category.name}
-          </h3>
-          <p class="text-sm" style="color: var(--color-warm-taupe);">{category.count} articles</p>
+          <h3 class="topic-name">{topic.name}</h3>
+          <div class="topic-arrow">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M5 12h14M12 5l7 7-7 7"/>
+            </svg>
+          </div>
         </a>
       ))}
     </div>
   </div>
 </section>
+

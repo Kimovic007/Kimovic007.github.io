@@ -5,9 +5,11 @@ import PostHeader from '../components/PostHeader.astro';
 import TableOfContents from '../components/TableOfContents.astro';
 import AuthorCard from '../components/AuthorCard.astro';
 import RelatedPosts from '../components/RelatedPosts.astro';
-import AffiliateBox from '../components/AffiliateBox.astro';
+// DISABLED: Pure blog mode - AffiliateBox import
+// import AffiliateBox from '../components/AffiliateBox.astro';
 import NewsletterCTA from '../components/NewsletterCTA.astro';
-import { productCategories } from '../data/products';
+// DISABLED: Pure blog mode - productCategories import
+// import { productCategories } from '../data/products';
 
 interface Props {
   frontmatter: {
@@ -22,15 +24,16 @@ interface Props {
     authorBio: string;
     tags: string[];
     readingTime: string;
-    affiliateProduct?: {
-      name: string;
-      image: string;
-      price: string;
-      rating: number;
-      link: string;
-      description: string;
-    };
-    affiliateProductId?: string;
+    // DISABLED: Pure blog mode - affiliate props kept for frontmatter compatibility
+    // affiliateProduct?: {
+    //   name: string;
+    //   image: string;
+    //   price: string;
+    //   rating: number;
+    //   link: string;
+    //   description: string;
+    // };
+    // affiliateProductId?: string;
   };
   headings: { depth: number; slug: string; text: string }[];
   collection: 'dogs' | 'cats' | 'products-reviews';
@@ -38,6 +41,8 @@ interface Props {
 
 const { frontmatter, headings, collection } = Astro.props;
 
+/*
+DISABLED: Pure blog mode - Affiliate product fetching
 // Fetch product by ID if affiliateProductId is provided
 let affiliateProduct = frontmatter.affiliateProduct;
 if (frontmatter.affiliateProductId && !affiliateProduct) {
@@ -45,6 +50,7 @@ if (frontmatter.affiliateProductId && !affiliateProduct) {
     .flatMap(cat => cat.products)
     .find(p => p.id === frontmatter.affiliateProductId);
 }
+*/
 
 // JSON-LD structured data for blog post
 const articleSchema = {
@@ -140,12 +146,14 @@ const articleSchema = {
         <NewsletterCTA />
       </div>
 
-      <!-- Right Sidebar (Affiliate Box + TOC) -->
+      <!-- Right Sidebar (TOC only - affiliate box disabled for pure blog mode) -->
       <aside class="lg:w-80 xl:w-96 shrink-0 order-1 lg:order-2">
         <div class="lg:sticky lg:top-20 space-y-6">
+          {/* DISABLED: Pure blog mode - AffiliateBox
           {affiliateProduct && (
             <AffiliateBox product={affiliateProduct} />
           )}
+          */}
           
           <TableOfContents headings={headings} />
         </div>

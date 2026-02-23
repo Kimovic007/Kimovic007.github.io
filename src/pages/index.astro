@@ -4,12 +4,14 @@ import { getCollection } from 'astro:content';
 import HomeHero from '../components/HomeHero.astro';
 import CategoryGrid from '../components/CategoryGrid.astro';
 import ArticlesSection from '../components/ArticlesSection.astro';
-import ProductsSection from '../components/ProductsSection.astro';
+// DISABLED: Pure blog mode - ProductsSection
+// import ProductsSection from '../components/ProductsSection.astro';
 import QuickTips from '../components/QuickTips.astro';
 import Testimonials from '../components/Testimonials.astro';
 import TrustBar from '../components/TrustBar.astro';
 import NewsletterCTA from '../components/NewsletterCTA.astro';
-import { categoryMeta, featuredProducts, quickTips } from '../data/home';
+// DISABLED: Pure blog mode - featuredProducts (returns empty array)
+import { featuredProducts, quickTips, topics, testimonials } from '../data/home';
 import { filterPostsByCategory } from '../utils/tags';
 
 // Get all blog posts from all collections
@@ -18,9 +20,9 @@ const catsPosts = await getCollection('cats');
 const productsPosts = await getCollection('products-reviews');
 
 const allPosts = [...dogsPosts, ...catsPosts, ...productsPosts];
-const categories = categoryMeta.map(meta => ({
-  ...meta,
-  count: meta.name === 'All Tags' ? allPosts.length : filterPostsByCategory(allPosts, meta.name).length,
+const topicsWithCounts = topics.map(topic => ({
+  ...topic,
+  count: topic.name === 'All Topics' ? allPosts.length : filterPostsByCategory(allPosts, topic.name as any).length,
 }));
 const sortedPosts = [...allPosts].sort((a, b) =>
   new Date(b.data.pubDate).getTime() - new Date(a.data.pubDate).getTime()
@@ -36,14 +38,16 @@ const recentPosts = sortedPosts.filter(post => post.slug !== featuredPost?.slug)
 >
   <HomeHero />
   <TrustBar />
-  <CategoryGrid items={categories} />
+  <CategoryGrid items={topicsWithCounts} />
   <ArticlesSection featured={featuredPost} posts={recentPosts} />
+  {/* DISABLED: Pure blog mode - ProductsSection
   <ProductsSection products={featuredProducts} />
-  <Testimonials />
+  */}
+  <QuickTips items={quickTips} />
   <section class="section-padding bg-white">
     <div class="container-blog max-w-4xl">
       <NewsletterCTA />
     </div>
   </section>
-  <QuickTips items={quickTips} />
+  <Testimonials items={testimonials} />
 </BaseLayout>

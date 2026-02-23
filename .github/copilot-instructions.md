@@ -1,5 +1,7 @@
 # PetBlog - AI Coding Agent Instructions
 
+> **MODE: Pure Content Blog** — Affiliate/product systems are dormant. See "Dormant Systems" section for restoration.
+
 ## Tech Stack
 - **Astro 5 SSG** with TypeScript strict mode, MDX support, sitemap integration
 - **Tailwind CSS 4** via Vite plugin - use `@theme` tokens in [src/styles/global.css](src/styles/global.css), NOT `@config`
@@ -39,13 +41,7 @@
 | `/collection/[collection]` | Filter by dogs/cats/products-reviews | [src/pages/collection/[collection].astro](src/pages/collection/%5Bcollection%5D.astro) |
 | `/tag/[tag]` | Filter by any tag | [src/pages/tag/[tag].astro](src/pages/tag/%5Btag%5D.astro) |
 | `/tags` | Tag cloud landing page | [src/pages/tags.astro](src/pages/tags.astro) |
-| `/products/[category]/[page]` | Paginated product listings | [src/pages/products/[category]/[page].astro](src/pages/products/%5Bcategory%5D/%5Bpage%5D.astro) |
-
-## Products System
-- **Static data only**: [src/data/products.ts](src/data/products.ts) imports from `src/data/product-categories/*.ts`
-- **Product ID format**: `{category}-{slug}` (e.g., `dog-food-blue-buffalo`)
-- **Affiliate linking**: set `affiliateProductId` in frontmatter → `BlogPostLayout` auto-fetches product
-- **Filter empty categories**: always use `productCategories.filter(cat => cat.products.length > 0)` before routing
+| `/disclosure` | Editorial Policy page | [src/pages/disclosure.astro](src/pages/disclosure.astro) |
 
 ## Content Creation
 **Required frontmatter:**
@@ -61,7 +57,7 @@ authorBio: "..."
 tags: ["nutrition", "dog food"]  # lowercase
 readingTime: "12 min read"
 ```
-**Optional:** `featured`, `affiliateProductId`, `updatedDate`, `published`
+**Optional:** `featured`, `updatedDate`, `published`
 
 **Authors**: Use names from [src/data/about.ts](src/data/about.ts): Dr. Sarah Mitchell, Emily Chen, Michael Torres, Jessica Williams
 
@@ -78,12 +74,12 @@ readingTime: "12 min read"
 
 ## Critical Patterns
 1. **Components receive data via props** - no internal `getCollection()` calls
-2. **Product reviews** go in `products-reviews/` collection with `affiliateProductId`
-3. **Custom button classes**: `.btn-primary`, `.btn-secondary`, `.btn-affiliate` in global.css
+2. **Product reviews** go in `products-reviews/` collection (editorial content only, no affiliate links)
+3. **Custom button classes**: `.btn-primary`, `.btn-secondary` in global.css
 4. **Section utility**: `.section-padding`, `.container-blog` for consistent spacing
 
 ## JSON-LD Structured Data
-`BlogPostLayout` auto-generates `BlogPosting` schema - see [src/layouts/BlogPostLayout.astro](src/layouts/BlogPostLayout.astro#L47-L70):
+`BlogPostLayout` auto-generates `BlogPosting` schema - see [src/layouts/BlogPostLayout.astro](src/layouts/BlogPostLayout.astro):
 ```ts
 const articleSchema = {
   "@context": "https://schema.org",
@@ -100,6 +96,46 @@ No manual schema creation needed for blog posts.
 | Issue | Cause | Fix |
 |-------|-------|-----|
 | 404 on blog posts | Missing collection in `[slug].astro` | Add to `getStaticPaths` |
-| No affiliate product | Invalid `affiliateProductId` | Match exact ID from product-categories |
 | Build fails | Tailwind `@config` used | Use `@theme` directive instead |
 | Wrong breadcrumb label | Raw folder name used | Use `COLLECTIONS` constant |
+
+---
+
+## Dormant Systems (Affiliate Marketing)
+
+The following systems are **disabled but preserved** for future restoration:
+
+### Archived Files
+- **Documentation**: `docs/archived/PRODUCT_ID_SYSTEM.md`
+- **Product pages**: `src/pages/_archived/products.astro`, `src/pages/_archived/products/`
+
+### Commented-Out Components
+These render empty fragments with `<!-- Disabled: pure blog mode -->`:
+- `AffiliateBox.astro` - Sidebar promotional boxes
+- `ProductCard.astro` - Product cards with pricing
+- `ProductGrid.astro` - Product grid layouts
+- `ProductsSection.astro` - Homepage product section
+- `SingleProduct.astro` - MDX-embeddable product cards
+- `ProductHero.astro` - Products page hero
+- `ProductCategorySection.astro` - Category product groups
+- `ProductTableOfContents.astro` - Product category navigation
+
+### Commented-Out Data
+- `src/data/products.ts` - exports empty `productCategories[]`
+- `src/data/home.ts` - exports empty `featuredProducts[]`
+- Product category files in `src/data/product-categories/` remain intact
+
+### Dormant Schema Field
+```ts
+// In src/content/config.ts
+affiliateProductId: z.string().optional(), // DORMANT
+```
+
+### Restoration Steps
+1. Uncomment imports in `src/data/products.ts` and `src/data/home.ts`
+2. Restore component code from git history or commented blocks
+3. Move pages from `src/pages/_archived/` back to `src/pages/`
+4. Uncomment `AffiliateBox` and `ProductsSection` in layouts/pages
+5. Restore `.btn-affiliate` class in `global.css`
+6. Update Header/Footer navigation links
+7. Restore affiliate disclosure in Footer and disclosure page
